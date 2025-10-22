@@ -1,32 +1,29 @@
-<?php
+<div class="border border-gray-200 rounded-lg shadow-sm bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
+    <a href="{{ route('products.show', $product) }}">
+        <img src="https://via.placeholder.com/300x200.png?text=Conecta+Vale" alt="{{ $product->name }}" class="h-48 w-full object-cover">
+    </a>
 
-namespace App\View\Components;
+    <div class="p-4">
+        <h3 class="font-bold text-lg text-gray-800 mb-2 truncate">
+            <a href="{{ route('products.show', $product) }}" class="hover:text-vale-primary">
+                {{ $product->name }}
+            </a>
+        </h3>
 
-use Closure;
-use Illuminate\Contracts\View\View;
-use Illuminate\View\Component;
-use App\Models\Product; // Importe o modelo
+        <p class="font-extrabold text-vale-primary text-xl mb-3">
+            R$ {{ number_format($product->price, 2, ',', '.') }}
+        </p>
 
-class ProductCard extends Component
-{
-    /**
-     * O produto a ser exibido.
-     */
-    public $product;
+        <div class="text-sm text-gray-500">
+            <p>Vendido por: {{ $product->seller->name }}</p>
+            <p>Postado em: {{ $product->created_at->format('d/m/Y') }}</p>
+        </div>
 
-    /**
-     * Create a new component instance.
-     */
-    public function __construct(Product $product) // Peça o produto no construtor
-    {
-        $this->product = $product;
-    }
-
-    /**
-     * Get the view / contents that represent the component.
-     */
-    public function render(): View|Closure|string
-    {
-        return view('components.product-card');
-    }
-}
+        <form action="{{ route('cart.store', $product) }}" method="POST" class="mt-4">
+            @csrf
+            <button type="submit" class="w-full bg-vale-accent hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition-colors duration-300">
+                Adicionar ao Carrinho
+            </button>
+        </form>
+    </div>
+</div>

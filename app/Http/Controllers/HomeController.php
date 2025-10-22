@@ -13,12 +13,11 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->paginate(15);
+        // Use 'with('seller')' para carregar o vendedor junto (Eager Loading)
+        $products = Product::with('seller')->latest()->paginate(16);
         $categories = Category::all();
-        
+
         // O Breeze usa a view 'welcome' por padrão para a home
-        // Podemos usar ela ou criar uma nova view 'home'.
-        // Vamos usar a 'welcome' por enquanto.
         return view('welcome', compact('products', 'categories'));
     }
 }
