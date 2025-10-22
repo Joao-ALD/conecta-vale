@@ -23,6 +23,6 @@ class PublicLayout extends Component
      */
     public function render()
     {
-        return view('components.public-layout');
+        return view('components.layouts.public');
     }
 }
