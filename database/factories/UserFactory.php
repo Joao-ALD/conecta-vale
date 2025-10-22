@@ -62,9 +62,9 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             // Se o usuário criado for um vendedor, crie um perfil para ele
-            if ($user->role === 'vendedor') {
-                SellerProfile::factory()->create(['user_id' => $user->id]);
-            }
+            if ($user->role === 'vendedor' && !$user->sellerProfile) {
+            // Se não tiver, crie um perfil fake para ele
+            SellerProfile::factory()->create(['user_id' => $user->id]);}
         });
     }
 

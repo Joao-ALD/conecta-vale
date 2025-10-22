@@ -12,35 +12,62 @@ class CartController extends Controller
      */
     public function store(Request $request, Product $product)
     {
-        // Por enquanto, vamos apenas testar se funciona
-        // dd() significa "dump and die" (despejar e parar)
-        dd('Produto para adicionar ao carrinho:', $product->name);
+        // 1. Pega o carrinho da sessão ou cria um array vazio
+        $cart = $request->session()->get('cart', []);
 
-        // Futuramente, aqui você vai:
-        // 1. Pegar o carrinho da sessão (ou criar um).
-        // 2. Adicionar o $product->id e a quantidade.
-        // 3. Salvar o carrinho de volta na sessão.
-        // 4. Redirecionar o usuário para a página do carrinho ou
-        //    mostrar uma mensagem de sucesso.
+        // 2. Verifica se o produto já está no carrinho
+        if (isset($cart[$product->id])) {
+            // Se sim, incrementa a quantidade
+            $cart[$product->id]['quantity']++;
+        } else {
+            // Se não, adiciona o produto
+            $cart[$product->id] = [
+                "name" => $product->name,
+                "quantity" => 1,
+                "price" => $product->price,
+                // "image" => $product->image_path (guarde para o futuro)
+            ];
+        }
 
-        // return redirect()->route('cart.index')->with('success', 'Produto adicionado ao carrinho!');
+        // 3. Salva o array do carrinho de volta na sessão
+        $request->session()->put('cart', $cart);
+
+        // 4. Redireciona para a página do carrinho com uma msg de sucesso
+        return redirect()->route('cart.index')->with('success', 'Produto adicionado ao carrinho!');
     }
 
     /**
      * Mostra a página do carrinho.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Lógica para buscar o carrinho da sessão e mostrar os produtos
-        return view('cart.index'); // Você precisará criar esta view
+        $cart = $request->session()->get('cart', []);
+
+        // Calcular o total
+        $total = 0;
+        foreach ($cart as $id => $details) {
+            $total += $details['price'] * $details['quantity'];
+        }
+
+        // Passa os itens do carrinho e o total para a view
+        return view('cart.index', compact('cart', 'total'));
     }
 
     /**
      * Remove um produto do carrinho.
      */
-    public function destroy(Product $product)
+    // Dentro de app/Http/Controllers/CartController.php
+
+    public function destroy(Request $request, Product $product)
     {
-        // Lógica para remover o item da sessão
-        // return back()->with('success', 'Produto removido do carrinho!');
+        $cart = $request->session()->get('cart', []);
+
+        // Verifica se o produto existe no carrinho e o remove
+        if (isset($cart[$product->id])) {
+            unset($cart[$product->id]);
+            $request->session()->put('cart', $cart);
+        }
+
+        return back()->with('success', 'Produto removido do carrinho!');
     }
 }

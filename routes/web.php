@@ -54,4 +54,13 @@ Route::middleware(['auth'])->group(function () {
     // Route::post('/contato/{product}', [ContactController::class, 'send'])->name('contact.send');
 });
 
+// Rotas do Vendedor
+Route::middleware(['auth', 'role:vendedor'])->group(function () {
+    Route::get('/vendedor/produtos', [ProductController::class, 'myProducts'])->name('seller.products');
+
+    // ADICIONE ESTAS DUAS ROTAS
+    Route::get('/produtos/criar', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/produtos', [ProductController::class, 'store'])->name('products.store');
+});
+
 require __DIR__ . '/auth.php';
