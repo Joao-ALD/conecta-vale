@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
+
 class ProductController extends Controller
 {
     /**
@@ -46,7 +47,13 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        // O Laravel automaticamente encontra o produto pelo ID (como definimos na rota)
+
+        // Vamos carregar as categorias e o vendedor junto para otimizar
+        $product->load('categories', 'seller.sellerProfile');
+
+        // Retorna a nova view que vamos criar
+        return view('products.show', compact('product'));
     }
 
     /**

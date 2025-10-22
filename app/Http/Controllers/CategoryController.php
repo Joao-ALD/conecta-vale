@@ -44,9 +44,25 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
+    /**
+     * Exibe os produtos de uma categoria específica.
+     */
     public function show(Category $category)
     {
-        //
+        // O Laravel automaticamente encontra a categoria pelo 'slug' (como definimos na rota)
+
+        // Carrega os produtos relacionados a essa categoria, com paginação
+        // Também usamos o 'with('seller')' para otimizar, igual na home
+        $products = $category->products()
+            ->with('seller')
+            ->latest()
+            ->paginate(12);
+
+        // Vamos reutilizar a sidebar de categorias da home
+        $categories = Category::all();
+
+        // Retorna a nova view que vamos criar
+        return view('categories.show', compact('category', 'products', 'categories'));
     }
 
     /**
