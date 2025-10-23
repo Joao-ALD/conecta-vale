@@ -1,12 +1,12 @@
 <div class="border border-gray-200 rounded-lg shadow-sm bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
     <a href="{{ route('products.show', $product) }}">
-        <img src="https://via.placeholder.com/300x200.png?text=Conecta+Vale" alt="{{ $product->name }}" class="h-48 w-full object-cover">
+        <img src="{{ $product->first_image_url }}" alt="{{ $product->name }}" class="h-48 w-full object-cover">
     </a>
 
     <div class="p-4">
         <h3 class="font-bold text-lg text-gray-800 mb-2 truncate">
             <a href="{{ route('products.show', $product) }}" class="hover:text-vale-primary">
-                {{ $product->name }}
+                {!! highlight($product->name, $query) !!}
             </a>
         </h3>
 

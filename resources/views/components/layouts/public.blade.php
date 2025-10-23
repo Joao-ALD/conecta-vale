@@ -22,8 +22,10 @@
                 </div>
 
                 <div class="flex items-center flex-1 px-8">
-                    <input type="text" placeholder="Buscar produtos..."
-                        class="w-full px-4 py-2 rounded-md text-gray-900">
+                    <form action="{{ route('search') }}" method="GET" class="w-full">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar produtos..."
+                            class="w-full px-4 py-2 rounded-md text-gray-900" >
+                    </form>
                 </div>
 
                 <div class="flex items-center">

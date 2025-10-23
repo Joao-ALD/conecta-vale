@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -45,5 +46,12 @@ class User extends Authenticatable
     public function sellerProfile()
     {
         return $this->hasOne(SellerProfile::class);
+    }
+
+    public function conversations()
+    {
+        // Retorna conversas onde o usuário é comprador OU vendedor
+        return $this->hasMany(Conversation::class, 'buyer_id')
+                    ->orWhere('seller_id', $this->id);
     }
 }

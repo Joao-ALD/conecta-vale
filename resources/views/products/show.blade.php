@@ -5,8 +5,21 @@
 
     <div class="bg-white rounded-lg shadow-lg overflow-hidden lg:grid lg:grid-cols-3 lg:gap-x-8">
 
-        <div class="lg:col-span-2">
-            <img src="https://via.placeholder.com/800x600.png?text=Imagem+do+Produto" alt="{{ $product->name }}" class="h-full w-full object-cover">
+        <div class="lg:col-span-2" x-data="{ mainImage: '{{ $product->first_image_url }}' }">
+            <div class="bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+                <img :src="mainImage" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg">
+            </div>
+        
+            <div class="flex space-x-2 overflow-x-auto">
+                @forelse($product->images as $image)
+                    <button @click="mainImage = '{{ Storage::url($image->path) }}'" 
+                            class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2" 
+                            :class="{ 'border-vale-primary': mainImage === '{{ Storage::url($image->path) }}' }">
+                        <img src="{{ Storage::url($image->path) }}" alt="Miniatura" class="w-full h-full object-cover">
+                    </button>
+                @empty
+                    @endforelse
+            </div>
         </div>
 
         <div class="p-6 lg:col-span-1 flex flex-col justify-between">
@@ -19,7 +32,9 @@
                     @endforeach
                 </div>
 
-                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">{{ $product->name }}</h1>
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">
+                    {!! highlight($product->name, $query ?? null) !!}
+                </h1>
 
                 <p class="text-4xl font-bold text-vale-primary mb-6">
                     R$ {{ number_format($product->price, 2, ',', '.') }}
@@ -27,7 +42,9 @@
 
                 <div class="mb-6">
                     <h2 class="text-lg font-bold mb-2">Descrição</h2>
-                    <p class="text-gray-700 whitespace-pre-line">{{ $product->description }}</p>
+                    <p class="text-gray-700 whitespace-pre-line">
+                        {!! highlight($product->description, $query ?? null) !!}
+                    </p>
                 </div>
             </div>
 
@@ -39,7 +56,7 @@
                     </button>
                 </form>
 
-                <a href="#" class="mt-4 w-full block text-center bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
+                <a href="{{ route('contact.show', $product) }}" class="mt-4 w-full block text-center bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
                     Entrar em Contato com Vendedor
                 </a>
             </div>

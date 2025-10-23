@@ -35,10 +35,19 @@
                                         <td class="py-4 px-4">R$ {{ number_format($product->price, 2, ',', '.') }}</td>
                                         <td class="py-4 px-4">{{ $product->created_at->format('d/m/Y') }}</td>
                                         <td class="py-4 px-4">
-                                            <a href="#"
+                                            <a href="{{ route('products.edit', $product->id) }}"
                                                 class="text-indigo-600 dark:text-indigo-400 hover:underline">Editar</a>
-                                            <a href="#"
-                                                class="text-red-600 dark:text-red-400 hover:underline ml-4">Excluir</a>
+
+                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST"
+                                                class="inline-block ml-4"
+                                                onsubmit="return confirm('Tem certeza que deseja excluir este anúncio?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-red-600 dark:text-red-400 hover:underline">
+                                                    Excluir
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty

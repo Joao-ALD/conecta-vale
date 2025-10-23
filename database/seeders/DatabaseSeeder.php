@@ -51,6 +51,11 @@ class DatabaseSeeder extends Seeder
         $vendedores = User::factory(5)->vendedor()->create();
 
         // --- 4. Criar Categorias ---
+
+        $defaultCategory = Category::factory()->create([
+            'name' => 'Sem Categoria',
+            'slug' => 'sem-categoria',
+        ]);
         // Vamos criar algumas categorias específicas
         $categorias = [
             'Eletrônicos',

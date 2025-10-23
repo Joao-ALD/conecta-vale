@@ -2,17 +2,176 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
     /**
-     * Mostra o dashboard do administrador.
+     * Mostra o dashboard do administrador com a lista de categorias.
      */
     public function dashboard()
     {
-        // Aqui você pode adicionar lógica para buscar estatísticas, etc.
-        // Por enquanto, vamos apenas retornar uma view.
-        return view('admin.dashboard'); // Você precisará criar esta view em: resources/views/admin/dashboard.blade.php
+        $categories = Category::orderBy('name')->get();
+        return view('admin.dashboard', compact('categories'));
     }
+
+    //? Gerenciamento de Categorias
+    public function editCategory(Category $category)
+    {
+        // Esta view usará o layout <x-app-layout>
+        return view('admin.categories.edit', compact('category'));
+    }
+    /** Atualiza uma categoria existente.*/
+    public function updateCategory(Request $request, Category $category)
+    {
+        // 1. Validação (garante que o 'name' é único, exceto para si mesmo)
+        $validatedData = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories')->ignore($category->id),
+            ],
+        ]);
+
+        // 2. Atualização
+        $category->update([
+            'name' => $validatedData['name'],
+            'slug' => Str::slug($validatedData['name']), // Atualiza o slug também
+        ]);
+
+        // 3. Redirecionar
+        return redirect()->route('admin.dashboard')->with('success', 'Categoria atualizada com sucesso!');
+    }
+    public function storeCategory(Request $request)
+    {
+        // 1. Validação
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name', // Nome deve ser único
+        ]);
+
+        // 2. Criação
+        Category::create([
+            'name' => $validatedData['name'],
+            'slug' => Str::slug($validatedData['name']), // Cria o slug automaticamente
+        ]);
+
+        // 3. Redirecionar
+        return redirect()->route('admin.dashboard')->with('success', 'Categoria criada com sucesso!');
+    }
+    /** Exclui uma categoria e reatribui produtos órfãos.*/
+    public function destroyCategory(Category $category)
+    {
+        // Não podemos deixar o admin excluir a categoria "Sem Categoria"
+        if ($category->slug === 'sem-categoria') {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Não é possível excluir a categoria padrão "Sem Categoria".');
+        }
+
+        try {
+            // Usamos uma transação para garantir que tudo funcione
+            // ou nada seja alterado se der um erro.
+            DB::transaction(function () use ($category) {
+
+                // 1. Encontra a categoria "Sem Categoria"
+                $defaultCategory = Category::where('slug', 'sem-categoria')->firstOrFail();
+
+                // 2. Encontra os produtos que ficarão "órfãos" (Produtos que SÓ têm esta categoria)
+                //    e faz a consulta diretamente no banco de dados.
+                $orphans = Product::whereHas('categories', function ($query) use ($category) {
+                    $query->where('category_id', $category->id); // O produto deve ter a categoria a ser excluída
+                }, '=', 1)->has('categories', '=', 1)->get(); // E o produto deve ter APENAS 1 categoria no total.
+
+                // 3. Reatribui os órfãos
+                foreach ($orphans as $product) {
+                    $product->categories()->attach($defaultCategory->id);
+                }
+
+                // 4. Exclui a categoria
+                // Graças ao onDelete('cascade') na migração,
+                // todas as ligações em 'category_product' serão excluídas,
+                // mas os produtos estarão seguros (e os órfãos agora têm a 'Sem Categoria').
+                $category->delete();
+            });
+        } catch (\Exception $e) {
+            // Se algo der errado (ex: 'Sem Categoria' não encontrada)
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'Ocorreu um erro inesperado ao excluir a categoria: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.dashboard')->with('success', 'Categoria excluída com sucesso!');
+    }
+
+    // ? Gerenciamento de Usuários
+    public function listUsers()
+    {
+        // Pega todos os usuários, com paginação. 
+        // 'with('sellerProfile')' carrega o perfil se for vendedor (otimização)
+        $users = User::with('sellerProfile')
+            ->orderBy('name')
+            ->paginate(15);
+
+        return view('admin.users.index', compact('users'));
+    }
+
+    /**
+ * Mostra o formulário para editar o nível (role) de um usuário.
+ */
+    public function editUser(User $user) {
+        // Os níveis (roles) permitidos no sistema
+        $roles = ['usuario', 'vendedor', 'admin'];
+    
+        return view('admin.users.edit', compact('user', 'roles'));
+    }
+
+    /**
+ * Atualiza o nível (role) de um usuário.
+ */
+public function updateUser(Request $request, User $user)
+{
+    // Impede que o admin altere a si mesmo por esta tela
+    if ($user->id === Auth::id()) {
+        abort(403, 'Você não pode alterar seu próprio nível de acesso.');
+    }
+
+    $validatedData = $request->validate([
+        'role' => ['required', Rule::in(['usuario', 'vendedor', 'admin'])]
+    ]);
+
+    $user->update($validatedData);
+
+    // Lógica futura: Se o usuário foi promovido a 'vendedor' e não tem
+    // um 'sellerProfile', talvez criar um vazio? Ou redirecionar
+    // para uma página que o obrigue a preencher?
+    // Por enquanto, apenas mudamos a role.
+
+    return redirect()->route('admin.users.index')->with('success', 'Nível do usuário atualizado com sucesso!');
+}
+
+/**
+ * Exclui um usuário do sistema.
+ */
+public function destroyUser(User $user)
+{
+    // Um admin NUNCA deve poder excluir a si mesmo.
+    if ($user->id === Auth::id()) {
+        return redirect()->route('admin.users.index')
+            ->with('error', 'Você não pode excluir sua própria conta de administrador.');
+    }
+
+    // Lógica futura: O que acontece com os produtos do vendedor excluído?
+    // Por enquanto, o 'onDelete('cascade')' que definimos em 'products'
+    // vai excluir todos os produtos dele. Isso é o esperado.
+
+    $user->delete();
+
+    return redirect()->route('admin.users.index')->with('success', 'Usuário excluído com sucesso!');
+}
 }
