@@ -24,52 +24,67 @@ class ContactController extends Controller
     }
 
     /**
-     * Mostra a tela de chat para um produto.
+     * Inicia uma conversa (se não existir) e redireciona para a tela de chat.
+     * Acessado pelo COMPRADOR a partir da página do produto.
      */
-    public function showConversation(Request $request, Product $product)
+    public function initiateConversation(Product $product)
     {
         $user = Auth::user();
 
         // Vendedor não pode mandar mensagem para si mesmo
         if ($user->id === $product->user_id) {
             return redirect()->route('products.show', $product)
-                ->with('error', 'Você não pode enviar uma mensagem para si mesmo.');
+                ->with('error', 'Você não pode iniciar uma conversa sobre um produto seu.');
         }
 
-        // Encontra (ou cria na memória) a conversa
+        // Encontra ou cria a conversa
         $conversation = Conversation::firstOrCreate(
             [
                 'product_id' => $product->id,
                 'buyer_id' => $user->id,
+            ],
+            [
                 'seller_id' => $product->user_id,
             ]
         );
 
-        // Carrega as mensagens
-        $conversation->load('messages.user');
+        // Redireciona para a rota que exibe a conversa
+        return redirect()->route('contact.show', $conversation);
+    }
+
+    /**
+     * Mostra a tela de chat para uma conversa existente.
+     * Acessado por COMPRADOR ou VENDEDOR a partir da inbox.
+     */
+    public function showConversation(Conversation $conversation)
+    {
+        // Autorização: Garante que o usuário logado faz parte da conversa
+        if (Auth::id() !== $conversation->buyer_id && Auth::id() !== $conversation->seller_id) {
+            abort(403, 'Acesso não autorizado.');
+        }
+
+        // Carrega as mensagens da conversa
+        $conversation->load('messages.user', 'product');
 
         return view('contact.show', compact('conversation'));
     }
 
+
     /**
      * Salva a nova mensagem no banco.
      */
-    public function sendMessage(Request $request, Product $product)
-    {
-        $user = Auth::user();
+    public function sendMessage(Request $request, Conversation $conversation)
+    {        
+        // Autorização: Garante que o usuário logado faz parte da conversa
+        if (Auth::id() !== $conversation->buyer_id && Auth::id() !== $conversation->seller_id) {
+            abort(403, 'Acesso não autorizado.');
+        }
 
         $request->validate(['body' => 'required|string|max:2000']);
 
-        // Encontra a conversa (deve existir do 'showConversation')
-        $conversation = Conversation::where([
-            'product_id' => $product->id,
-            'buyer_id' => $user->id,
-            'seller_id' => $product->user_id,
-        ])->firstOrFail();
-
         // Cria a mensagem
         $conversation->messages()->create([
-            'user_id' => $user->id,
+            'user_id' => Auth::id(),
             'body' => $request->body,
         ]);
 

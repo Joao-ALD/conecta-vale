@@ -1,8 +1,14 @@
-email de vendedor: vendedor@teste.com
-senha de vendedor: password
+email de vendedor: 
+vendedor@teste.com
+senha de vendedor: 
+password
 
-email de admin: admin@conectavale.com
-Senha de admin: admin123
+email de admin: 
+admin@conectavale.com
+Senha de admin: 
+admin123
 
-email de usuário: --
-senha de usuário: --
+email de usuário: 
+usuario@teste
+senha de usuário: 
+12345678

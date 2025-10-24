@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -74,6 +75,20 @@ class ProductController extends Controller
             }
         }
 
+        if ($request->hasFile('images')) {
+            $order = 0; // 1. Inicializa o contador de ordem
+            foreach ($request->file('images') as $imageFile) {
+                $path = $imageFile->store('products', 'public');
+
+                // 2. Adiciona a 'order' ao criar
+                $product->images()->create([
+                    'path' => $path,
+                    'order' => $order
+                ]);
+                $order++; // 3. Incrementa o contador
+            }
+        }
+
         // 5. Redirecionar
         return redirect()->route('seller.products')->with('success', 'Anúncio criado com sucesso!');
     }
@@ -122,14 +137,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        // 1. Autorizar (usando a Policy)
-        // Isso vai checar automaticamente se auth()->user()->id === $product->user_id
         $this->authorize('update', $product);
-
-        // 2. Buscar as categorias
         $categories = Category::all();
 
-        // 3. Retornar a view
+        // Adicione esta linha para garantir dados frescos
+        $product->load('images', 'categories');
+
         return view('products.edit', compact('product', 'categories'));
     }
 
@@ -143,35 +156,78 @@ class ProductController extends Controller
     /**
      * Atualiza um produto existente no banco de dados.
      */
+    /**
+     * Atualiza um produto existente no banco de dados.
+     */
     public function update(Request $request, Product $product)
     {
-        // 1. Autorizar (usando a Policy)
+        // 1. Autorizar
         $this->authorize('update', $product);
 
-        // 2. Validação (mesma do 'store')
+        // 2. Validação (adicionamos 'image_order')
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'categories' => 'required|array|min:1',
             'categories.*' => 'exists:categories,id',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'exists:product_images,id',
+            'new_images' => 'nullable|array',
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image_order' => 'nullable|array', // Valida a nova ordem
+            'image_order.*' => 'exists:product_images,id' // Garante que os IDs são reais
         ]);
 
-        // 3. Atualizar o Produto
+        // 3. Atualizar Produto (Texto)
         $product->update([
             'name' => $validatedData['name'],
             'description' => $validatedData['description'],
             'price' => $validatedData['price'],
         ]);
 
-        // 4. Sincronizar as Categorias
-        // sync() é como o attach(), mas remove as antigas que não foram enviadas
+        // 4. Sincronizar Categorias
         $product->categories()->sync($validatedData['categories']);
 
-        // 5. Redirecionar
+        // 5. Excluir Imagens
+        if ($request->has('delete_images')) {
+            foreach ($request->delete_images as $imageId) {
+                $image = ProductImage::find($imageId);
+                if ($image && $image->product_id === $product->id) {
+                    Storage::disk('public')->delete($image->path);
+                    $image->delete();
+                }
+            }
+        }
+
+        // 6. Reordenar Imagens Existentes (NOVO)
+        if ($request->has('image_order')) {
+            foreach ($request->image_order as $index => $imageId) {
+                // Encontra a imagem, garante que ela é deste produto, e atualiza a ordem
+                ProductImage::where('id', $imageId)
+                    ->where('product_id', $product->id)
+                    ->update(['order' => $index]);
+            }
+        }
+
+        // 7. Adicionar Novas Imagens
+        if ($request->hasFile('new_images')) {
+            // Pega a maior 'order' atual para continuar a sequência
+            $maxOrder = $product->images()->max('order') ?? 0;
+
+            foreach ($request->file('new_images') as $imageFile) {
+                $maxOrder++; // Incrementa antes de usar
+                $path = $imageFile->store('products', 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'order' => $maxOrder
+                ]);
+            }
+        }
+
+        // 8. Redirecionar
         return redirect()->route('seller.products')->with('success', 'Anúncio atualizado com sucesso!');
     }
-
     /**
      * Remove the specified resource from storage.
      *

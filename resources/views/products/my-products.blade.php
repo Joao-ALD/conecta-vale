@@ -31,7 +31,11 @@
                                 @forelse($products as $product)
                                     <tr
                                         class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="py-4 px-4">{{ $product->name }}</td>
+                                        <td class="py-4 px-4">
+                                            <a href="{{ route('products.show', $product) }}" class="hover:underline hover:text-indigo-600 dark:hover:text-indigo-400">
+                                                {{ $product->name }}
+                                            </a>
+                                        </td>
                                         <td class="py-4 px-4">R$ {{ number_format($product->price, 2, ',', '.') }}</td>
                                         <td class="py-4 px-4">{{ $product->created_at->format('d/m/Y') }}</td>
                                         <td class="py-4 px-4">

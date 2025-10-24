@@ -33,6 +33,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/usuarios/{user}/editar', [AdminController::class, 'editUser'])->name('admin.users.edit');
     Route::put('/admin/usuarios/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/admin/usuarios/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+
+    // * Rotas de Gerenciamento de Produtos *
+    Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
 });
 
 //? Rotas do Vendedor
@@ -52,12 +55,20 @@ Route::middleware(['auth'])->group(function () {
 
     // --- ROTAS DO CARRINHO ---
     Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.store');
+    Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.destroy');
 
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
-    Route::delete('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy'); // --- ROTAS DE MENSAGENS ---
+        // --- ROTAS DE MENSAGENS ---
     Route::get('/mensagens', [ContactController::class, 'inbox'])->name('contact.inbox');
-    Route::get('/contato/{product}', [ContactController::class, 'showConversation'])->name('contact.show');
-    Route::post('/contato/{product}', [ContactController::class, 'sendMessage'])->name('contact.send');
+    
+    // Rota para um COMPRADOR iniciar uma conversa a partir de um produto
+    Route::get('/contato/{product}', [ContactController::class, 'initiateConversation'])->name('contact.initiate');
+
+    // Rota para EXIBIR uma conversa existente (para comprador e vendedor)
+    Route::get('/conversations/{conversation}', [ContactController::class, 'showConversation'])->name('contact.show');
+
+    // Rota para ENVIAR uma mensagem em uma conversa existente
+    Route::post('/conversations/{conversation}', [ContactController::class, 'sendMessage'])->name('contact.send');
 
 });
 

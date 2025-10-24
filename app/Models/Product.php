@@ -35,7 +35,8 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class);
+        // Retorna todas as imagens associadas, ordenadas pela coluna 'order'
+        return $this->hasMany(ProductImage::class)->orderBy('order');
     }
 
     /**

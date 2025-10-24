@@ -16,6 +16,34 @@
 
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
+
+                    <!-- Filters -->
+                    <div class="mb-6">
+                        <form action="{{ route('admin.users.index') }}" method="GET" class="flex items-end space-x-4">
+                            <!-- Search Input -->
+                            <div class="flex-grow">
+                                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Pesquisar (Nome, Email, Loja):</label>
+                                <input type="text" name="search" id="search" value="{{ request('search') }}" class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" placeholder="Digite sua busca...">
+                            </div>
+
+                            <!-- Role Dropdown -->
+                            <div>
+                                <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por Nível:</label>
+                                <select name="role" id="role" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                    <option value="">Todos</option>
+                                    <option value="usuario" @selected(request('role') === 'usuario')>Usuário</option>
+                                    <option value="vendedor" @selected(request('role') === 'vendedor')>Vendedor</option>
+                                    <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                                </select>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div>
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest">Pesquisar</button>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>

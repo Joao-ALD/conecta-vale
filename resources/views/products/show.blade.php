@@ -5,28 +5,75 @@
 
     <div class="bg-white rounded-lg shadow-lg overflow-hidden lg:grid lg:grid-cols-3 lg:gap-x-8">
 
-        <div class="lg:col-span-2" x-data="{ mainImage: '{{ $product->first_image_url }}' }">
-            <div class="bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
+        <div class="lg:col-span-2" x-data="{
+                    images: [
+                        @foreach($product->images as $image)
+                            '{{ Storage::url($image->path) }}',
+                        @endforeach
+                    ],
+                    currentIndex: 0,
+                    next() {
+                        if (this.currentIndex < this.images.length - 1) {
+                            this.currentIndex++;
+                        } else {
+                            this.currentIndex = 0; // Loop
+                        }
+                    },
+                    prev() {
+                        if (this.currentIndex > 0) {
+                            this.currentIndex--;
+                        } else {
+                            this.currentIndex = this.images.length - 1; // Loop
+                        }
+                    },
+                    get mainImage() {
+                        return this.images.length > 0 ? this.images[this.currentIndex] : '{{ $product->first_image_url }}';
+                    }
+                }">
+            <div class="relative bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
                 <img :src="mainImage" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg">
+
+                <!-- Carousel Buttons -->
+                <template x-if="images.length > 1">
+                    <div class="absolute inset-0 flex items-center justify-between px-4">
+                        <button @click="prev()"
+                            class="bg-black/50 text-white rounded-full p-2 hover:bg-black/75 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button @click="next()"
+                            class="bg-black/50 text-white rounded-full p-2 hover:bg-black/75 focus:outline-none">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </template>
             </div>
-        
+
+            <!-- Thumbnails -->
             <div class="flex space-x-2 overflow-x-auto">
-                @forelse($product->images as $image)
-                    <button @click="mainImage = '{{ Storage::url($image->path) }}'" 
-                            class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2" 
-                            :class="{ 'border-vale-primary': mainImage === '{{ Storage::url($image->path) }}' }">
+                @forelse($product->images as $index => $image)
+                    <button @click="currentIndex = {{ $index }}"
+                        class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2"
+                        :class="{ 'border-vale-primary': currentIndex === {{ $index }} }">
                         <img src="{{ Storage::url($image->path) }}" alt="Miniatura" class="w-full h-full object-cover">
                     </button>
                 @empty
-                    @endforelse
+                @endforelse
             </div>
         </div>
-
         <div class="p-6 lg:col-span-1 flex flex-col justify-between">
             <div>
                 <div class="mb-2">
                     @foreach($product->categories as $category)
-                        <span class="inline-block bg-gray-200 text-gray-700 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
+                        <span
+                            class="inline-block bg-gray-200 text-gray-700 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
                             {{ $category->name }}
                         </span>
                     @endforeach
@@ -51,21 +98,39 @@
             <div class="mt-6">
                 <form action="{{ route('cart.store', $product) }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full bg-vale-accent hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
+                    <button type="submit"
+                        class="w-full bg-vale-accent hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
                         Adicionar ao Carrinho
                     </button>
                 </form>
 
-                <a href="{{ route('contact.show', $product) }}" class="mt-4 w-full block text-center bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
+                <a href="{{ route('contact.initiate', $product) }}"
+                    class="mt-4 w-full block text-center bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
                     Entrar em Contato com Vendedor
                 </a>
+
+                @auth
+                    @if(Auth::user()->role === 'admin')
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="mt-4"
+                            onsubmit="return confirm('ADMIN: Tem certeza que deseja excluir PERMANENTEMENTE este anúncio?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-300">
+                                Excluir Anúncio (Admin)
+                            </button>
+                        </form>
+                    @endif
+                @endauth
+
             </div>
         </div>
 
         <div class="lg:col-span-3 border-t border-gray-200 p-6">
             <h2 class="text-xl font-bold mb-4">Informações do Vendedor</h2>
             <div class="bg-gray-50 p-4 rounded-lg">
-                <p class="text-lg font-semibold">{{ $product->seller->sellerProfile->store_name ?? $product->seller->name }}</p>
+                <p class="text-lg font-semibold">
+                    {{ $product->seller->sellerProfile->store_name ?? $product->seller->name }}</p>
                 <p class="text-gray-600">Vendedor desde: {{ $product->seller->created_at->format('M Y') }}</p>
                 <p class="text-gray-600">Telefone: {{ $product->seller->sellerProfile->phone ?? 'Não informado' }}</p>
             </div>

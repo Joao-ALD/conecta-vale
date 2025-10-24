@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -110,68 +111,113 @@ class AdminController extends Controller
     }
 
     // ? Gerenciamento de Usuários
-    public function listUsers()
+    public function listUsers(Request $request)
     {
-        // Pega todos os usuários, com paginação. 
-        // 'with('sellerProfile')' carrega o perfil se for vendedor (otimização)
-        $users = User::with('sellerProfile')
-            ->orderBy('name')
-            ->paginate(15);
+        // 1. Validação dos filtros
+        $validated = $request->validate([
+            'role' => ['nullable', 'string', Rule::in(['usuario', 'vendedor', 'admin'])],
+            'search' => ['nullable', 'string', 'max:255']
+        ]);
 
-        return view('admin.users.index', compact('users'));
+        $selectedRole = $validated['role'] ?? null;
+        $searchQuery = $validated['search'] ?? null;
+
+        // 2. Query base
+        $usersQuery = User::with('sellerProfile')->orderBy('name');
+
+        // 3. Aplica o filtro de busca
+        if ($searchQuery) {
+            $usersQuery->where(function ($query) use ($searchQuery) {
+                $query->where('name', 'like', "%{$searchQuery}%")
+                      ->orWhere('email', 'like', "%{$searchQuery}%")
+                      ->orWhereHas('sellerProfile', function ($q) use ($searchQuery) {
+                          $q->where('store_name', 'like', "%{$searchQuery}%");
+                      });
+            });
+        }
+
+        // 4. Aplica o filtro de role
+        if ($selectedRole) {
+            $usersQuery->where('role', $selectedRole);
+        }
+
+        // 5. Paginação
+        $users = $usersQuery->paginate(15)->withQueryString();
+
+        // 6. Retorna a view com os dados
+        return view('admin.users.index', [
+            'users' => $users,
+            'selectedRole' => $selectedRole,
+            'searchQuery' => $searchQuery // Pass search query back to view
+        ]);
     }
-
-    /**
- * Mostra o formulário para editar o nível (role) de um usuário.
- */
-    public function editUser(User $user) {
+    /*Mostra o formulário para editar o nível (role) de um usuário.*/
+    public function editUser(User $user)
+    {
         // Os níveis (roles) permitidos no sistema
         $roles = ['usuario', 'vendedor', 'admin'];
-    
+
         return view('admin.users.edit', compact('user', 'roles'));
     }
+    /*Atualiza o nível (role) de um usuário.*/
+    public function updateUser(Request $request, User $user)
+    {
+        // Impede que o admin altere a si mesmo por esta tela
+        if ($user->id === Auth::id()) {
+            abort(403, 'Você não pode alterar seu próprio nível de acesso.');
+        }
 
-    /**
- * Atualiza o nível (role) de um usuário.
- */
-public function updateUser(Request $request, User $user)
-{
-    // Impede que o admin altere a si mesmo por esta tela
-    if ($user->id === Auth::id()) {
-        abort(403, 'Você não pode alterar seu próprio nível de acesso.');
+        $validatedData = $request->validate([
+            'role' => ['required', Rule::in(['usuario', 'vendedor', 'admin'])]
+        ]);
+
+        $user->update($validatedData);
+
+        // Lógica futura: Se o usuário foi promovido a 'vendedor' e não tem
+        // um 'sellerProfile', talvez criar um vazio? Ou redirecionar
+        // para uma página que o obrigue a preencher?
+        // Por enquanto, apenas mudamos a role.
+
+        return redirect()->route('admin.users.index')->with('success', 'Nível do usuário atualizado com sucesso!');
+    }
+    /*Exclui um usuário do sistema.*/
+    public function destroyUser(User $user)
+    {
+        // Um admin NUNCA deve poder excluir a si mesmo.
+        if ($user->id === Auth::id()) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Você não pode excluir sua própria conta de administrador.');
+        }
+
+        // Lógica futura: O que acontece com os produtos do vendedor excluído?
+        // Por enquanto, o 'onDelete('cascade')' que definimos em 'products'
+        // vai excluir todos os produtos dele. Isso é o esperado.
+
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'Usuário excluído com sucesso!');
     }
 
-    $validatedData = $request->validate([
-        'role' => ['required', Rule::in(['usuario', 'vendedor', 'admin'])]
-    ]);
 
-    $user->update($validatedData);
+    // ? Gerenciamento de Produtos
+    public function destroyProduct(Product $product)
+    {
+        // 1. Excluir as imagens do disco
+        //    (É importante fazer isso ANTES de excluir o produto,
+        //     senão perdemos a referência aos arquivos)
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->path);
+            // O registro da imagem no banco será excluído automaticamente
+            // pelo onDelete('cascade') na migration de product_images.
+        }
 
-    // Lógica futura: Se o usuário foi promovido a 'vendedor' e não tem
-    // um 'sellerProfile', talvez criar um vazio? Ou redirecionar
-    // para uma página que o obrigue a preencher?
-    // Por enquanto, apenas mudamos a role.
+        // 2. Excluir o produto
+        //    (Isso também excluirá as ligações em category_product
+        //     pelo onDelete('cascade') que definimos lá)
+        $product->delete();
 
-    return redirect()->route('admin.users.index')->with('success', 'Nível do usuário atualizado com sucesso!');
-}
-
-/**
- * Exclui um usuário do sistema.
- */
-public function destroyUser(User $user)
-{
-    // Um admin NUNCA deve poder excluir a si mesmo.
-    if ($user->id === Auth::id()) {
-        return redirect()->route('admin.users.index')
-            ->with('error', 'Você não pode excluir sua própria conta de administrador.');
+        // 3. Redirecionar para a Home (ou para um painel de admin futuro)
+        //    com uma mensagem de sucesso.
+        return redirect()->route('home')->with('success', 'Anúncio excluído pelo administrador.');
     }
-
-    // Lógica futura: O que acontece com os produtos do vendedor excluído?
-    // Por enquanto, o 'onDelete('cascade')' que definimos em 'products'
-    // vai excluir todos os produtos dele. Isso é o esperado.
-
-    $user->delete();
-
-    return redirect()->route('admin.users.index')->with('success', 'Usuário excluído com sucesso!');
-}
 }
