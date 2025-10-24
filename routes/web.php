@@ -43,12 +43,14 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Rotas que EXIGEM perfil completo
 Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(function () {
+    // Rota customizada para listar "Meus Produtos" (o index do vendedor)
     Route::get('/vendedor/produtos', [ProductController::class, 'myProducts'])->name('seller.products');
-    Route::get('/produtos/criar', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/produtos', [ProductController::class, 'store'])->name('products.store');
-    Route::get('/produtos/{product}/editar', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/produtos/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/produtos/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    // Esta linha substitui as 5 rotas de CRUD (create, store, edit, update, destroy)
+    Route::resource('produtos', ProductController::class)->except([
+        'index', 'show'
+    ]);
+
     // Adicione outras rotas de vendedor aqui no futuro (ex: painel de vendas)
 });
 
@@ -63,9 +65,9 @@ Route::middleware(['auth'])->group(function () {
 
     // --- ROTAS DO CARRINHO ---
     Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.store');
-    Route::get('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
-    
+    Route::delete('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+
         // --- ROTAS DE MENSAGENS ---
     Route::get('/mensagens', [ContactController::class, 'inbox'])->name('contact.inbox');
     

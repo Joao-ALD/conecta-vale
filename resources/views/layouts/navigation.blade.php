@@ -15,7 +15,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox')">
+                    <x-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox', 'contact.show')">
                         {{ __('Minhas Mensagens') }}
                     </x-nav-link>
 
@@ -92,7 +92,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox')">
+            <x-responsive-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox', 'contact.show')">
                 {{ __('Minhas Mensagens') }}
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'vendedor')
