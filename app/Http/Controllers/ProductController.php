@@ -64,17 +64,6 @@ class ProductController extends Controller
         // 3. Anexar as Categorias (relação Many-to-Many)
         $product->categories()->attach($validatedData['categories']);
 
-        // 4. Salvar as Imagens (NOVO)
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $imageFile) {
-                // Salva o arquivo em 'storage/app/public/products'
-                $path = $imageFile->store('products', 'public');
-
-                // Cria o registro no banco
-                $product->images()->create(['path' => $path]);
-            }
-        }
-
         if ($request->hasFile('images')) {
             $order = 0; // 1. Inicializa o contador de ordem
             foreach ($request->file('images') as $imageFile) {

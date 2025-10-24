@@ -27,7 +27,7 @@
         <section class="w-full lg:w-3/4">
             <h1 class="font-bold text-2xl mb-6 text-gray-900">Anúncios Recentes</h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                 @forelse ($products as $product)
                     <x-product-card :product="$product" />
                 @empty

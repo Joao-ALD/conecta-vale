@@ -19,11 +19,17 @@
             <p>Postado em: {{ $product->created_at->format('d/m/Y') }}</p>
         </div>
 
-        <form action="{{ route('cart.store', $product) }}" method="POST" class="mt-4">
-            @csrf
-            <button type="submit" class="w-full bg-vale-accent hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition-colors duration-300">
-                Adicionar ao Carrinho
-            </button>
-        </form>
+        @auth
+            <form action="{{ route('cart.store', $product) }}" method="POST" class="mt-4">
+                @csrf
+                <button type="submit" class="w-full bg-vale-accent hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded transition-colors duration-300">
+                    Adicionar ao Carrinho
+                </button>
+            </form>
+        @else
+            <a href="{{ route('login') }}" class="mt-4 block w-full text-center bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition-colors duration-300">
+                Faça login para comprar
+            </a>
+        @endauth
     </div>
 </div>

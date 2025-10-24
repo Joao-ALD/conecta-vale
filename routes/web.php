@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\SellerProfileController;
 use Illuminate\Support\Facades\Route;
 
 // ?Página Principal (Home)
@@ -38,16 +39,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
 });
 
-//? Rotas do Vendedor
-Route::middleware(['auth', 'role:vendedor'])->group(function () {
-    Route::get('/vendedor/produtos', [ProductController::class, 'myProducts'])->name('seller.products');
+// --- ROTAS DO VENDEDOR ---
 
+// Rotas que EXIGEM perfil completo
+Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(function () {
+    Route::get('/vendedor/produtos', [ProductController::class, 'myProducts'])->name('seller.products');
     Route::get('/produtos/criar', [ProductController::class, 'create'])->name('products.create');
     Route::post('/produtos', [ProductController::class, 'store'])->name('products.store');
-
     Route::get('/produtos/{product}/editar', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/produtos/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/produtos/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    // Adicione outras rotas de vendedor aqui no futuro (ex: painel de vendas)
+});
+
+// Rotas para CRIAR o perfil (não exigem perfil completo)
+Route::middleware(['auth', 'role:vendedor'])->group(function () {
+    Route::get('/vendedor/perfil/criar', [SellerProfileController::class, 'create'])->name('seller.profile.create');
+    Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store');
 });
 
 //? Rotas de Ações Protegidas (Carrinho, Contato, etc.)
@@ -55,7 +63,6 @@ Route::middleware(['auth'])->group(function () {
 
     // --- ROTAS DO CARRINHO ---
     Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.store');
-    Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.destroy');
 
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
         // --- ROTAS DE MENSAGENS ---

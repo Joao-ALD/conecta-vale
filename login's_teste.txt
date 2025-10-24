@@ -9,6 +9,6 @@ Senha de admin:
 admin123
 
 email de usuário: 
-usuario@teste
+ teste2@gmail.com
 senha de usuário: 
-12345678
+ 12345678

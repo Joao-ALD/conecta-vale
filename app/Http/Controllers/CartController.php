@@ -58,13 +58,13 @@ class CartController extends Controller
      */
     // Dentro de app/Http/Controllers/CartController.php
 
-    public function destroy(Request $request, Product $product)
+    public function destroy(Request $request, $product)
     {
         $cart = $request->session()->get('cart', []);
 
         // Verifica se o produto existe no carrinho e o remove
-        if (isset($cart[$product->id])) {
-            unset($cart[$product->id]);
+        if (isset($cart[$product])) {
+            unset($cart[$product]);
             $request->session()->put('cart', $cart);
         }
 
