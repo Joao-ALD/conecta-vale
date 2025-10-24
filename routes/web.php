@@ -63,8 +63,9 @@ Route::middleware(['auth'])->group(function () {
 
     // --- ROTAS DO CARRINHO ---
     Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.store');
-
+    Route::get('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
+    
         // --- ROTAS DE MENSAGENS ---
     Route::get('/mensagens', [ContactController::class, 'inbox'])->name('contact.inbox');
     

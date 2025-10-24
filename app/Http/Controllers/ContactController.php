@@ -63,6 +63,12 @@ class ContactController extends Controller
             abort(403, 'Acesso não autorizado.');
         }
 
+        // Marca as mensagens da outra pessoa como lidas
+        $conversation->messages()
+                     ->where('user_id', '!=', Auth::id()) // Mensagens da outra pessoa
+                     ->where('is_read', false)          // Que ainda não foram lidas
+                     ->update(['is_read' => true]);     // Marca como lida
+
         // Carrega as mensagens da conversa
         $conversation->load('messages.user', 'product');
 
