@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
 use App\Http\View\Composers\UnreadMessagesComposer;
+use App\Models\Category;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer('layouts.navigation', UnreadMessagesComposer::class);
+        // Composer para o contador de mensagens não lidas (usado em ambos os layouts)
+        View::composer(['layouts.navigation', 'components.layouts.public'], UnreadMessagesComposer::class);
+
+        // Composer para a lista de categorias globais (usado no layout público)
+        View::composer('components.layouts.public', function ($view) {
+            $view->with('categoriesGlobal', Category::where('slug', '!=', 'sem-categoria')->orderBy('name')->get());
+        });
     }
 }

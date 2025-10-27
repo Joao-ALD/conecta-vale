@@ -27,7 +27,7 @@
                 Mostrando produtos em: <span class="text-vale-primary">{{ $category->name }}</span>
             </h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 @forelse ($products as $product)
                     <x-product-card :product="$product" />
                 @empty
