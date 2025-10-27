@@ -45,13 +45,11 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'), // Senha fácil: 'password'
             ]);
 
-
         // --- 3. Criar Usuários Vendedores ---
         // (A mágica acontece aqui: a UserFactory vai chamar a SellerProfileFactory)
         $vendedores = User::factory(5)->vendedor()->create();
 
         // --- 4. Criar Categorias ---
-
         $defaultCategory = Category::factory()->create([
             'name' => 'Sem Categoria',
             'slug' => 'sem-categoria',
