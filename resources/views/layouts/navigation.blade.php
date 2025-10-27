@@ -17,6 +17,11 @@
                     </x-nav-link>
                     <x-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox', 'contact.show')">
                         {{ __('Minhas Mensagens') }}
+                        @if(isset($unreadMessagesCount) && $unreadMessagesCount > 0)
+                            <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                                {{ $unreadMessagesCount }}
+                            </span>
+                        @endif
                     </x-nav-link>
 
                     @if(Auth::user()->role === 'vendedor')
@@ -94,6 +99,11 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('contact.inbox')" :active="request()->routeIs('contact.inbox', 'contact.show')">
                 {{ __('Minhas Mensagens') }}
+                @if(isset($unreadMessagesCount) && $unreadMessagesCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                        {{ $unreadMessagesCount }}
+                    </span>
+                @endif
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'vendedor')
                 <x-responsive-nav-link :href="route('seller.products')" :active="request()->routeIs('seller.products', 'products.create', 'products.edit')">

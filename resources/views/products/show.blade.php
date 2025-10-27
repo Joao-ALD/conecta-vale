@@ -78,7 +78,7 @@
                 @click.self="closeModal()"
                 @keydown.escape.window="closeModal()"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
-                style="display: none;"
+                x-cloak
             >
                 <img :src="modalImageUrl" alt="Visualização em tela cheia" class="max-w-full max-h-full object-contain p-4">
                 
