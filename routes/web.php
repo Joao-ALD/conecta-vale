@@ -37,6 +37,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // * Rotas de Gerenciamento de Produtos *
     Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+    Route::get('/admin/produtos', [AdminController::class, 'listProducts'])->name('admin.products.index');
 });
 
 // --- ROTAS DO VENDEDOR ---
@@ -58,6 +59,8 @@ Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(f
 Route::middleware(['auth', 'role:vendedor'])->group(function () {
     Route::get('/vendedor/perfil/criar', [SellerProfileController::class, 'create'])->name('seller.profile.create');
     Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store');
+    Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit');
+    Route::put('/vendedor/perfil', [SellerProfileController::class, 'update'])->name('seller.profile.update');
 });
 
 //? Rotas de Ações Protegidas (Carrinho, Contato, etc.)

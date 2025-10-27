@@ -36,6 +36,9 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Gerenciar Categorias') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">
+                            {{ __('Gerenciar Anúncios') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -59,6 +62,11 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if(Auth::user()->role === 'vendedor' && Auth::user()->sellerProfile)
+                            <x-dropdown-link :href="route('seller.profile.edit')">
+                                {{ __('Editar Perfil de Vendedor') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -110,6 +118,17 @@
                     {{ __('Meus Anúncios') }}
                 </x-responsive-nav-link>
             @endif
+            @if(Auth::user()->role === 'admin')
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
+                    {{ __('Gerenciar Usuários') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                    {{ __('Gerenciar Categorias') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">
+                    {{ __('Gerenciar Anúncios') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
@@ -120,6 +139,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if(Auth::user()->role === 'vendedor' && Auth::user()->sellerProfile)
+                    <x-responsive-nav-link :href="route('seller.profile.edit')">
+                        {{ __('Editar Perfil de Vendedor') }}
+                    </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

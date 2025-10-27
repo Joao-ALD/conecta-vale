@@ -220,4 +220,17 @@ class AdminController extends Controller
         //    com uma mensagem de sucesso.
         return redirect()->route('home')->with('success', 'Anúncio excluído pelo administrador.');
     }
+
+    /**
+     * Lista todos os produtos do sistema para moderação.
+     */
+    public function listProducts(Request $request) // Adicione Request para filtros futuros
+    {
+        // Busca todos os produtos, mais recentes primeiro, com info do vendedor
+        $products = Product::with('seller') 
+                           ->latest()
+                           ->paginate(20); // Mais produtos por página para admin
+
+        return view('admin.products.index', compact('products'));
+    }
 }
