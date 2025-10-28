@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
 use App\Models\SellerProfile;
+use App\Models\Subscription;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -105,5 +108,36 @@ class SellerProfileController extends Controller
 
         // Redireciona de volta para a página de edição com msg de sucesso
         return redirect()->route('seller.profile.edit')->with('success', 'Perfil de vendedor atualizado com sucesso!');
+    }
+
+    public function showPlans()
+    {
+        $plans = Plan::all();
+        $currentSubscription = Auth::user()->currentSubscription();
+
+        return view('seller.plans.show', compact('plans', 'currentSubscription'));
+    }
+
+    public function subscribeToPlan(Request $request)
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $plan = Plan::findOrFail($request->plan_id);
+        $user = Auth::user();
+
+        // Lógica de expiração
+        $expiresAt = $plan->price > 0 ? Carbon::now()->addMonth() : null;
+
+        Subscription::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'plan_id' => $plan->id,
+                'expires_at' => $expiresAt,
+            ]
+        );
+
+        return redirect()->route('seller.plans.show')->with('success', 'Plano atualizado com sucesso!');
     }
 }
