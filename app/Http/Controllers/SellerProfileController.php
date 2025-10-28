@@ -57,7 +57,7 @@ class SellerProfileController extends Controller
         $user->sellerProfile()->create($validatedData);
 
         // Redireciona para o painel de anúncios (agora ele terá acesso)
-        return redirect()->route('seller.products')->with('success', 'Perfil de vendedor criado com sucesso!');
+        return redirect()->route('products.my')->with('success', 'Perfil de vendedor criado com sucesso!');
     }
 
     /**

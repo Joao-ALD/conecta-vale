@@ -18,7 +18,7 @@ class AdminController extends Controller
     /**
      * Mostra o dashboard do administrador com a lista de categorias.
      */
-    public function dashboard()
+    public function listCategory()
     {
         $categories = Category::orderBy('name')->get();
         return view('admin.dashboard', compact('categories'));

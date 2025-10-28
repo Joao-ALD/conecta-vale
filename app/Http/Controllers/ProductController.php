@@ -235,6 +235,6 @@ class ProductController extends Controller
         $product->delete();
 
         // 3. Redirecionar
-        return redirect()->route('seller.products')->with('success', 'Anúncio excluído com sucesso!');
+        return redirect()->route('products.my')->with('success', 'Anúncio excluído com sucesso!');
     }
 }

@@ -114,7 +114,7 @@
                         </div>
 
                         <div class="flex items-center justify-end mt-6">
-                            <a href="{{ route('seller.products') }}"
+                            <a href="{{ route('products.my') }}"
                                 class="text-sm text-gray-600 dark:text-gray-400 hover:underline mr-4">
                                 Cancelar
                             </a>

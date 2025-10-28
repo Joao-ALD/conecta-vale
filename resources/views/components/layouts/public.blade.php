@@ -62,7 +62,7 @@
                                 <x-slot name="content">
                                     <x-dropdown-link :href="route('dashboard')">Meu Painel</x-dropdown-link>
                                     @if(Auth::user()->role === 'vendedor')
-                                        <x-dropdown-link :href="route('seller.products')">Meus Anúncios</x-dropdown-link>
+                                        <x-dropdown-link :href="route('products.my')">Meus Anúncios</x-dropdown-link>
                                         @if(Auth::user()->sellerProfile)
                                             <x-dropdown-link :href="route('seller.profile.edit')">Editar Perfil Vendedor</x-dropdown-link>
                                         @endif
@@ -74,7 +74,7 @@
                         </div>
 
                          @if(Auth::user()->role === 'vendedor')
-                            <a href="{{ route('produtos.create') }}" class="ml-4 px-4 py-2 rounded-md text-sm font-medium bg-vale-accent text-black hover:bg-yellow-600 shadow">Anunciar Grátis</a>
+                            <a href="{{ route('products.create') }}" class="ml-4 px-4 py-2 rounded-md text-sm font-medium bg-vale-accent text-black hover:bg-yellow-600 shadow">Anunciar Grátis</a>
                         @endif
 
                     @else

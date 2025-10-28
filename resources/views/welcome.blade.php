@@ -11,7 +11,7 @@
         @endguest
         @auth
             @if(Auth::user()->role === 'vendedor')
-                <a href="{{ route('produtos.create') }}" class="inline-block px-6 py-2 rounded-md bg-vale-accent text-black font-semibold hover:bg-yellow-600">Anunciar Agora</a>
+                <a href="{{ route('products.create') }}" class="inline-block px-6 py-2 rounded-md bg-vale-accent text-black font-semibold hover:bg-yellow-600">Anunciar Agora</a>
             @else
                 {{-- Usuário logado mas não vendedor --}}
                 <p class="text-sm">(Torne-se um vendedor para anunciar)</p>

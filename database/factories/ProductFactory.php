@@ -22,7 +22,7 @@ class ProductFactory extends Factory
             // user_id (o vendedor) será fornecido pelo DatabaseSeeder
             'name' => $this->faker->sentence(4),
             'description' => $this->faker->paragraphs(3, true),
-            'price' => $this->randomFloat(2, 10, 5000), // Preço entre 10 e 5000
+            'price' => fake()->randomFloat(2, 10, 5000), 
         ];
     }
 

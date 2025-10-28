@@ -25,7 +25,7 @@
                     </x-nav-link>
 
                     @if(Auth::user()->role === 'vendedor')
-                        <x-nav-link :href="route('seller.products')" :active="request()->routeIs('seller.products', 'products.create', 'products.edit')">
+                        <x-nav-link :href="route('products.my')" :active="request()->routeIs('products.my', 'products.create', 'products.edit')">
                             {{ __('Meus Anúncios') }}
                         </x-nav-link>
                     @endif
@@ -33,10 +33,10 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                             {{ __('Gerenciar Usuários') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                        <x-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Gerenciar Categorias') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.products.index')">
+                        <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.index', 'admin.plans.create', 'admin.plans.edit')">
                             {{ __('Gerenciar Planos') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">
@@ -117,7 +117,7 @@
                 @endif
             </x-responsive-nav-link>
             @if(Auth::user()->role === 'vendedor')
-                <x-responsive-nav-link :href="route('seller.products')" :active="request()->routeIs('seller.products', 'products.create', 'products.edit')">
+                <x-responsive-nav-link :href="route('products.my')" :active="request()->routeIs('products.my', 'products.create', 'products.edit')">
                     {{ __('Meus Anúncios') }}
                 </x-responsive-nav-link>
             @endif
@@ -125,10 +125,10 @@
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                     {{ __('Gerenciar Usuários') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                <x-responsive-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Gerenciar Categorias') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.products.index')">
+                <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.index', 'admin.plans.create', 'admin.plans.edit')">
                     {{ __('Gerenciar Planos') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">

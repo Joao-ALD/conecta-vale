@@ -5,7 +5,7 @@
                 {{ __('Meus Anúncios') }}
             </h2>
 
-            <a href="{{ route('produtos.create') }}"
+            <a href="{{ route('products.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-vale-primary border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 + Adicionar Novo Anúncio
             </a>
@@ -39,10 +39,10 @@
                                         <td class="py-4 px-4">R$ {{ number_format($product->price, 2, ',', '.') }}</td>
                                         <td class="py-4 px-4">{{ $product->created_at->format('d/m/Y') }}</td>
                                         <td class="py-4 px-4">
-                                            <a href="{{ route('produtos.edit', $product->id) }}"
+                                            <a href="{{ route('products.edit', $product->id) }}"
                                                 class="text-indigo-600 dark:text-indigo-400 hover:underline">Editar</a>
 
-                                            <form action="{{ route('produtos.destroy', $product->id) }}" method="POST"
+                                            <form action="{{ route('products.destroy', $product->id) }}" method="POST"
                                                 class="inline-block ml-4"
                                                 onsubmit="return confirm('Tem certeza que deseja excluir este anúncio?');">
                                                 @csrf
