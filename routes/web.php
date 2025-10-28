@@ -40,8 +40,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/produtos', [AdminController::class, 'listProducts'])->name('admin.products.index');
 
     // * Rotas de Gerenciamento de Planos *
-    Route::get('/admin/planos', [AdminController::class, 'listPlans'])->name('admin.plans.index');});
-
+    Route::get('/admin/planos', [AdminController::class, 'listPlans'])->name('admin.plans.index');
+    Route::get('/admin/planos/criar', [AdminController::class, 'createPlan'])->name('admin.plans.create');
+    Route::get('/admin/planos/edit/{id}', [AdminController::class, 'editPlan'])->name('admin.plans.edit');
+});
 // --- ROTAS DO VENDEDOR ---
 
 // Rotas que EXIGEM perfil completo
@@ -51,7 +53,8 @@ Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(f
 
     // Esta linha substitui as 5 rotas de CRUD (create, store, edit, update, destroy)
     Route::resource('produtos', ProductController::class)->except([
-        'index', 'show'
+        'index',
+        'show'
     ]);
 
     // Adicione outras rotas de vendedor aqui no futuro (ex: painel de vendas)
@@ -73,9 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-        // --- ROTAS DE MENSAGENS ---
+    // --- ROTAS DE MENSAGENS ---
     Route::get('/mensagens', [ContactController::class, 'inbox'])->name('contact.inbox');
-    
+
     // Rota para um COMPRADOR iniciar uma conversa a partir de um produto
     Route::get('/contato/{product}', [ContactController::class, 'initiateConversation'])->name('contact.initiate');
 
@@ -84,7 +87,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para ENVIAR uma mensagem em uma conversa existente
     Route::post('/conversations/{conversation}', [ContactController::class, 'sendMessage'])->name('contact.send');
-
 });
 
 //? Rotas do Breeze
