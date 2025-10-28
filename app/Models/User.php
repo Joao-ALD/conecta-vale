@@ -54,4 +54,14 @@ class User extends Authenticatable
         return $this->hasMany(Conversation::class, 'buyer_id')
                     ->orWhere('seller_id', $this->id);
     }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
 }

@@ -70,6 +70,9 @@ Route::middleware(['auth', 'role:vendedor'])->group(function () {
     Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store');
     Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit');
     Route::put('/vendedor/perfil', [SellerProfileController::class, 'update'])->name('seller.profile.update');
+
+    Route::get('/vendedor/planos', [SellerProfileController::class, 'showPlans'])->name('seller.plans.show');
+    Route::post('/vendedor/planos/assinar', [SellerProfileController::class, 'subscribeToPlan'])->name('seller.plans.subscribe');
 });
 
 //? Rotas de Ações Protegidas (Carrinho, Contato, etc.)
