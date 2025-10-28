@@ -24,7 +24,7 @@
                         </div>
 
                         <div class="flex items-center justify-between mt-6">
-                            <a href="{{ route('admin.dashboard') }}"
+                            <a href="{{ route('admin.listCategory') }}"
                                 class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
                                 Cancelar
                             </a>

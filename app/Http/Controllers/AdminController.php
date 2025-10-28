@@ -50,7 +50,7 @@ class AdminController extends Controller
         ]);
 
         // 3. Redirecionar
-        return redirect()->route('admin.dashboard')->with('success', 'Categoria atualizada com sucesso!');
+        return redirect()->route('admin.listCategory')->with('success', 'Categoria atualizada com sucesso!');
     }
     public function storeCategory(Request $request)
     {
@@ -66,14 +66,14 @@ class AdminController extends Controller
         ]);
 
         // 3. Redirecionar
-        return redirect()->route('admin.dashboard')->with('success', 'Categoria criada com sucesso!');
+        return redirect()->route('admin.listCategory')->with('success', 'Categoria criada com sucesso!');
     }
     /** Exclui uma categoria e reatribui produtos órfãos.*/
     public function destroyCategory(Category $category)
     {
         // Não podemos deixar o admin excluir a categoria "Sem Categoria"
         if ($category->slug === 'sem-categoria') {
-            return redirect()->route('admin.dashboard')
+            return redirect()->route('admin.listCategory')
                 ->with('error', 'Não é possível excluir a categoria padrão "Sem Categoria".');
         }
 
@@ -104,11 +104,11 @@ class AdminController extends Controller
             });
         } catch (\Exception $e) {
             // Se algo der errado (ex: 'Sem Categoria' não encontrada)
-            return redirect()->route('admin.dashboard')
+            return redirect()->route('admin.listCategory')
                 ->with('error', 'Ocorreu um erro inesperado ao excluir a categoria: ' . $e->getMessage());
         }
 
-        return redirect()->route('admin.dashboard')->with('success', 'Categoria excluída com sucesso!');
+        return redirect()->route('admin.listCategory')->with('success', 'Categoria excluída com sucesso!');
     }
 
     // ? Gerenciamento de Usuários

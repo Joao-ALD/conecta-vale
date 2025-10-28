@@ -21,7 +21,7 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 
 // ? Rotas do Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('listCategory');
     
     // * Rotas de Gerenciamento de Categorias *
     Route::get('/admin/categorias', [AdminController::class, 'listCategory'])->name('admin.listCategory');
