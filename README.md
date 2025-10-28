@@ -1,71 +1,71 @@
 # Conecta Vale
 
-## Description
-Conecta Vale is a Laravel-based e-commerce platform that connects sellers and customers. It allows sellers to create their own profiles, manage products, and categorize them, while customers can browse and purchase products. The platform includes an administration panel for managing the entire system.
+## Descrição
+O Conecta Vale é uma plataforma de e-commerce baseada em Laravel que conecta vendedores e clientes. Ele permite que os vendedores criem seus próprios perfis, gerenciem produtos e os categorizem, enquanto os clientes podem navegar e comprar produtos. A plataforma inclui um painel de administração para gerenciar todo o sistema.
 
-## Features
-- User authentication for administrators, sellers, and customers.
-- Seller profiles with store name, document type, document number and phone.
-- Product management, including creation, editing, and deletion.
-- Category management to organize products.
-- A database seeder to populate the application with test data, including an administrator, sellers, customers, products, and categories.
+## Funcionalidades
+- Autenticação de usuários para administradores, vendedores e clientes.
+- Perfis de vendedor com nome da loja, tipo de documento, número do documento e telefone.
+- Gerenciamento de produtos, incluindo criação, edição e exclusão.
+- Gerenciamento de categorias para organizar os produtos.
+- Um seeder de banco de dados para popular a aplicação com dados de teste, incluindo um administrador, vendedores, clientes, produtos e categorias.
 
-## Technologies Used
+## Tecnologias Utilizadas
 - **Backend:** Laravel, PHP
 - **Frontend:** Blade, Alpine.js, Tailwind CSS, Vite
-- **Database:** MySQL (based on typical Laravel setup)
-- **Development Environment:** Laravel Sail (optional, based on `composer.json`)
+- **Banco de Dados:** MySQL (baseado na configuração típica do Laravel)
+- **Ambiente de Desenvolvimento:** Laravel Sail (opcional, baseado no `composer.json`)
 
-## Installation
-1. **Clone the repository:**
+## Instalação
+1. **Clone o repositório:**
    ```bash
    git clone https://github.com/your-username/conecta-vale.git
    cd conecta-vale
    ```
-2. **Install PHP dependencies:**
+2. **Instale as dependências do PHP:**
    ```bash
    composer install
    ```
-3. **Install frontend dependencies:**
+3. **Instale as dependências do frontend:**
    ```bash
    npm install
    ```
-4. **Create a copy of the `.env.example` file and name it `.env`:**
+4. **Crie uma cópia do arquivo `.env.example` e nomeie-a como `.env`:**
    ```bash
    cp .env.example .env
    ```
-5. **Generate an application key:**
+5. **Gere uma chave de aplicação:**
    ```bash
    php artisan key:generate
    ```
-6. **Configure your database in the `.env` file.**
-7. **Run the database migrations and seed the database:**
+6. **Configure seu banco de dados no arquivo `.env`.**
+7. **Execute as migrações do banco de dados e popule o banco de dados (seed):**
    ```bash
    php artisan migrate --seed
    ```
-8. **Start the Vite development server:**
+8. **Inicie o servidor de desenvolvimento do Vite:**
    ```bash
    npm run dev
    ```
-9. **Start the Laravel development server:**
+9. **Inicie o servidor de desenvolvimento do Laravel:**
    ```bash
    php artisan serve
    ```
-## Usage
-The database seeder creates the following test users:
+## Uso
+O seeder do banco de dados cria os seguintes usuários de teste:
 
-- **Administrator:**
+- **Administrador:**
   - **Email:** `admin@conectavale.com`
-  - **Password:** `admin123`
+  - **Senha:** `admin123`
 
-- **Seller:**
+- **Vendedor:**
   - **Email:** `vendedor@teste.com`
-  - **Password:** `password`
+  - **Senha:** `password`
 
-You can use these credentials to log in and test the application.
+Você pode usar essas credenciais para fazer login e testar a aplicação.
 
-## Contributing
-Contributions are welcome! Please feel free to submit a pull request.
+## Contribuição
+Contribuições são bem-vindas! Sinta-se à vontade para enviar um pull request.
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## Licença
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
