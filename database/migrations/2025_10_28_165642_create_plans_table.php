@@ -15,10 +15,15 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
-
-            $table->text('description');
+            $table->string('name')->unique(); // Ex: Gratuito, Bronze, Prata, Ouro
+            $table->text('description')->nullable();
+            $table->decimal('price', 8, 2)->default(0.00); // Preço mensal/anual
+            $table->string('features')->nullable(); // JSON ou texto com os benefícios
+            $table->boolean('is_active')->default(true); // Para ativar/desativar planos
+            $table->timestamps(); // Adiciona created_at e updated_at
         });
     }
+
 
     /**
      * Reverse the migrations.
