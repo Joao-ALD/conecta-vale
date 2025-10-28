@@ -11,4 +11,9 @@ class Plan extends Model
 
     // Permite preencher todos os campos via create() ou update()
     protected $guarded = []; 
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }

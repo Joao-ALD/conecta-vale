@@ -61,6 +61,17 @@ Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(f
     ]);
 
     // Adicione outras rotas de vendedor aqui no futuro (ex: painel de vendas)
+});
+
+// Rotas para CRIAR o perfil (não exigem perfil completo)
+Route::middleware(['auth', 'role:vendedor'])->group(function () {
+    Route::get('/vendedor/perfil/criar', [SellerProfileController::class, 'create'])->name('seller.profile.create');
+    Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store');
+    Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit');
+    Route::put('/vendedor/perfil', [SellerProfileController::class, 'update'])->name('seller.profile.update');
+
+    Route::get('/vendedor/planos', [SellerProfileController::class, 'showPlans'])->name('seller.plans.show');
+    Route::post('/vendedor/planos/assinar', [SellerProfileController::class, 'subscribeToPlan'])->name('seller.plans.subscribe');
     
     // Rotas para GERENCIAR o perfil (exigem perfil completo)
     Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit'); // Editar
