@@ -23,7 +23,7 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('listCategory');
     
-    // * Rotas de Gerenciamento de Categorias *
+    // * Rotas de Gerenciamento de Categorias (Admin) *
     Route::get('/admin/categorias', [AdminController::class, 'listCategory'])->name('admin.listCategory');
     Route::post('/admin/categorias', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
     Route::get('/admin/categorias/{category}/editar', [AdminController::class, 'editCategory'])->name('admin.categories.edit');
@@ -37,18 +37,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/usuarios/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
 
     // * Rotas de Gerenciamento de Produtos *
-    Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
     Route::get('/admin/produtos', [AdminController::class, 'listProducts'])->name('admin.products.index');
+    Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
 
     // * Rotas de Gerenciamento de Planos *
     Route::get('/admin/planos', [AdminController::class, 'listPlans'])->name('admin.plans.index');
     Route::get('/admin/planos/criar', [AdminController::class, 'createPlan'])->name('admin.plans.create');
-    Route::put('/admin/planos', [AdminController::class, 'storePlan'])->name('admin.plans.store');
+    Route::post('/admin/planos', [AdminController::class, 'storePlan'])->name('admin.plans.store');
     Route::get('/admin/planos/{plan}/editar', [AdminController::class, 'editPlan'])->name('admin.plans.edit');
     Route::put('/admin/planos/{plan}', [AdminController::class, 'updatePlan'])->name('admin.plans.update');
     Route::delete('/admin/planos/{plan}', [AdminController::class, 'destroyPlan'])->name('admin.plans.destroy');
 });
-// --- ROTAS DO VENDEDOR ---
 
 // Rotas que EXIGEM perfil completo
 Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(function () {
@@ -62,17 +61,19 @@ Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(f
     ]);
 
     // Adicione outras rotas de vendedor aqui no futuro (ex: painel de vendas)
+    
+    // Rotas para GERENCIAR o perfil (exigem perfil completo)
+    Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit'); // Editar
+    Route::put('/vendedor/perfil', [SellerProfileController::class, 'update'])->name('seller.profile.update'); // Atualizar
 });
 
-// Rotas para CRIAR o perfil (não exigem perfil completo)
-Route::middleware(['auth', 'role:vendedor'])->group(function () {
-    Route::get('/vendedor/perfil/criar', [SellerProfileController::class, 'create'])->name('seller.profile.create');
-    Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store');
-    Route::get('/vendedor/perfil/editar', [SellerProfileController::class, 'edit'])->name('seller.profile.edit');
-    Route::put('/vendedor/perfil', [SellerProfileController::class, 'update'])->name('seller.profile.update');
+// Rotas para CRIAR o perfil (não exigem perfil completo, mas exigem ser vendedor)
+Route::middleware(['auth', 'role:vendedor', 'seller.profile.incomplete'])->group(function () {
+    Route::get('/vendedor/perfil/criar', [SellerProfileController::class, 'create'])->name('seller.profile.create'); // Criar
+    Route::post('/vendedor/perfil', [SellerProfileController::class, 'store'])->name('seller.profile.store'); // Armazenar
 });
 
-//? Rotas de Ações Protegidas (Carrinho, Contato, etc.)
+//? Rotas de Ações Protegidas (Carrinho, Contato, Perfil de Usuário)
 Route::middleware(['auth'])->group(function () {
 
     // --- ROTAS DO CARRINHO ---
@@ -92,16 +93,16 @@ Route::middleware(['auth'])->group(function () {
     // Rota para ENVIAR uma mensagem em uma conversa existente
     Route::post('/conversations/{conversation}', [ContactController::class, 'sendMessage'])->name('contact.send');
 });
+// --- ROTAS DE PERFIL DE USUÁRIO (Breeze) ---
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit'); // Editar
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Atualizar
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // Excluir
+});
 
-//? Rotas do Breeze
+// Rota do Dashboard (Breeze)
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 require __DIR__ . '/auth.php';
