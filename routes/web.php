@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SellerProfileController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // ?Página Principal (Home)
@@ -91,6 +92,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carrinho/adicionar/{product}', [CartController::class, 'store'])->name('cart.store');
     Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/carrinho/remover/{product}', [CartController::class, 'destroy'])->name('cart.destroy');
+
+    // --- ROTAS DE CHECKOUT ---
+    Route::get('/checkout', [OrderController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
 
     // --- ROTAS DE MENSAGENS ---
     Route::get('/mensagens', [ContactController::class, 'inbox'])->name('contact.inbox');

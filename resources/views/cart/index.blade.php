@@ -63,7 +63,7 @@
             </div>
 
             <div class="mt-4 sm:mt-0">
-                <a href="#" class="w-full sm:w-auto bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300">
+                <a href="{{ route('checkout.index') }}" class="w-full sm:w-auto bg-vale-primary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300">
                     Finalizar Compra
                 </a>
             </div>
