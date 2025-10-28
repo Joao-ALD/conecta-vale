@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Plan;
 
 class AdminController extends Controller
 {
@@ -129,10 +130,10 @@ class AdminController extends Controller
         if ($searchQuery) {
             $usersQuery->where(function ($query) use ($searchQuery) {
                 $query->where('name', 'like', "%{$searchQuery}%")
-                      ->orWhere('email', 'like', "%{$searchQuery}%")
-                      ->orWhereHas('sellerProfile', function ($q) use ($searchQuery) {
-                          $q->where('store_name', 'like', "%{$searchQuery}%");
-                      });
+                    ->orWhere('email', 'like', "%{$searchQuery}%")
+                    ->orWhereHas('sellerProfile', function ($q) use ($searchQuery) {
+                        $q->where('store_name', 'like', "%{$searchQuery}%");
+                    });
             });
         }
 
@@ -227,10 +228,68 @@ class AdminController extends Controller
     public function listProducts(Request $request) // Adicione Request para filtros futuros
     {
         // Busca todos os produtos, mais recentes primeiro, com info do vendedor
-        $products = Product::with('seller') 
-                           ->latest()
-                           ->paginate(20); // Mais produtos por página para admin
+        $products = Product::with('seller')
+            ->latest()
+            ->paginate(20); // Mais produtos por página para admin
 
         return view('admin.products.index', compact('products'));
+    }
+
+    public function listPlans()
+    {
+        $plans = Plan::orderBy('price')->get();
+        return view('admin.plans.index', compact('plans'));
+    }
+
+    public function createPlan()
+    {
+        return view('admin.plans.create');
+    }
+
+    public function storePlan(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:plans,name',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'features' => 'nullable|string', // Poderia validar como JSON se usar
+            'is_active' => 'boolean',
+        ]);
+        // Garante que o checkbox 'is_active' tenha valor 0 se não for marcado
+        $validatedData['is_active'] = $request->has('is_active');
+
+        Plan::create($validatedData);
+        return redirect()->route('admin.plans.index')->with('success', 'Plano criado com sucesso!');
+    }
+
+    public function editPlan(Plan $plan)
+    {
+        return view('admin.plans.edit', compact('plan'));
+    }
+
+    public function updatePlan(Request $request, Plan $plan)
+    {
+        $validatedData = $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('plans')->ignore($plan->id)],
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'features' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+        $validatedData['is_active'] = $request->has('is_active');
+
+        $plan->update($validatedData);
+        return redirect()->route('admin.plans.index')->with('success', 'Plano atualizado com sucesso!');
+    }
+
+    public function destroyPlan(Plan $plan)
+    {
+        // Adicionar lógica de segurança aqui depois (ex: não excluir se houver assinantes)
+        try {
+            $plan->delete();
+        } catch (\Exception $e) {
+            return redirect()->route('admin.plans.index')->with('error', 'Erro ao excluir plano: ' . $e->getMessage());
+        }
+        return redirect()->route('admin.plans.index')->with('success', 'Plano excluído com sucesso!');
     }
 }

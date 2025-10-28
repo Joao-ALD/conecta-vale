@@ -38,7 +38,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // * Rotas de Gerenciamento de Produtos *
     Route::delete('/admin/produtos/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
     Route::get('/admin/produtos', [AdminController::class, 'listProducts'])->name('admin.products.index');
-});
+
+    // * Rotas de Gerenciamento de Planos *
+    Route::get('/admin/planos', [AdminController::class, 'listPlans'])->name('admin.plans.index');});
 
 // --- ROTAS DO VENDEDOR ---
 

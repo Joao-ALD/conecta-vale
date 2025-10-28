@@ -36,6 +36,9 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Gerenciar Categorias') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.products.index')">
+                            {{ __('Gerenciar Planos') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">
                             {{ __('Gerenciar Anúncios') }}
                         </x-nav-link>
@@ -124,6 +127,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Gerenciar Categorias') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.products.index')">
+                    {{ __('Gerenciar Planos') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.index')">
                     {{ __('Gerenciar Anúncios') }}
