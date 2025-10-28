@@ -262,7 +262,7 @@ class AdminController extends Controller
         return redirect()->route('admin.plans.index')->with('success', 'Plano criado com sucesso!');
     }
 
-    public function editPlan(Plan $plan)
+    public function editPlan(Plan    $plan)
     {
         return view('admin.plans.edit', compact('plan'));
     }

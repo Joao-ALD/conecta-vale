@@ -42,17 +42,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // * Rotas de Gerenciamento de Planos *
     Route::get('/admin/planos', [AdminController::class, 'listPlans'])->name('admin.plans.index');
     Route::get('/admin/planos/criar', [AdminController::class, 'createPlan'])->name('admin.plans.create');
-    Route::get('/admin/planos/edit/{id}', [AdminController::class, 'editPlan'])->name('admin.plans.edit');
+    Route::put('/admin/planos', [AdminController::class, 'storePlan'])->name('admin.plans.store');
+    Route::get('/admin/planos/{plan}/editar', [AdminController::class, 'editPlan'])->name('admin.plans.edit');
+    Route::put('/admin/planos/{plan}', [AdminController::class, 'updatePlan'])->name('admin.plans.update');
+    Route::delete('/admin/planos/{plan}', [AdminController::class, 'destroyPlan'])->name('admin.plans.destroy');
 });
 // --- ROTAS DO VENDEDOR ---
 
 // Rotas que EXIGEM perfil completo
 Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(function () {
     // Rota customizada para listar "Meus Produtos" (o index do vendedor)
-    Route::get('/vendedor/produtos', [ProductController::class, 'myProducts'])->name('seller.products');
+    Route::get('/vendedor/meus-produtos', [ProductController::class, 'myProducts'])->name('products.my');
 
     // Esta linha substitui as 5 rotas de CRUD (create, store, edit, update, destroy)
-    Route::resource('produtos', ProductController::class)->except([
+    Route::resource('products', ProductController::class)->except([
         'index',
         'show'
     ]);

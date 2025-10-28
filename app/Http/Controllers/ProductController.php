@@ -79,7 +79,7 @@ class ProductController extends Controller
         }
 
         // 5. Redirecionar
-        return redirect()->route('seller.products')->with('success', 'Anúncio criado com sucesso!');
+        return redirect()->route('products.my')->with('success', 'Anúncio criado com sucesso!');
     }
 
     /**
@@ -215,7 +215,7 @@ class ProductController extends Controller
         }
 
         // 8. Redirecionar
-        return redirect()->route('seller.products')->with('success', 'Anúncio atualizado com sucesso!');
+        return redirect()->route('products.my')->with('success', 'Anúncio atualizado com sucesso!');
     }
     /**
      * Remove the specified resource from storage.
