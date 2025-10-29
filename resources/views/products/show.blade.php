@@ -55,7 +55,7 @@
             <!-- Thumbnails -->
             <div class="flex space-x-2 overflow-x-auto pb-2">
                 @forelse($product->images->sortBy('order') as $index => $image)
-                    <button @click="currentIndex = {{ $index }}" class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2" :class="{ 'border-vale-primary': currentIndex === {{ $index }} }">
+                    <button @click="currentIndex = {{ $index }}; openModal('{{ Storage::url($image->path) }}')" class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2 cursor-pointer" :class="{ 'border-vale-primary': currentIndex === {{ $index }} }">
                         <img src="{{ Storage::url($image->path) }}" alt="Miniatura" class="w-full h-full object-cover">
                     </button>
                 @empty
