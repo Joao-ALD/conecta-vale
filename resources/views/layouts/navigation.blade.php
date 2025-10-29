@@ -33,7 +33,7 @@
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                             {{ __('Gerenciar Usuários') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('listCategory')">
+                        <x-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('admin.listCategory')">
                             {{ __('Gerenciar Categorias') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.index', 'admin.plans.create', 'admin.plans.edit')">
@@ -125,7 +125,7 @@
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                     {{ __('Gerenciar Usuários') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('listCategory')">
+                <x-responsive-nav-link :href="route('admin.listCategory')" :active="request()->routeIs('admin.listCategory')">
                     {{ __('Gerenciar Categorias') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.plans.index')" :active="request()->routeIs('admin.plans.index', 'admin.plans.create', 'admin.plans.edit')">
