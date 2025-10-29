@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function currentSubscription()
     {
-        return $this->hasOne(Subscription::class)->latestOfMany();
+        return $this->subscriptions()->latest()->first();
     }
 
     public function favorites()
