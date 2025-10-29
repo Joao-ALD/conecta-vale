@@ -18,10 +18,21 @@ class AdminController extends Controller
     /**
      * Mostra o dashboard do administrador com a lista de categorias.
      */
+    public function dashboard()
+    {
+        $stats = [
+            'users' => User::count(),
+            'products' => Product::count(),
+            'categories' => Category::count(),
+            'plans' => Plan::count(),
+        ];
+        return view('admin.index', compact('stats'));
+    }
+
     public function listCategory()
     {
         $categories = Category::orderBy('name')->get();
-        return view('admin.dashboard', compact('categories'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     //? Gerenciamento de Categorias
@@ -52,7 +63,7 @@ class AdminController extends Controller
         ]);
 
         // 3. Redirecionar
-        return redirect()->route('admin.listCategory')->with('success', 'Categoria atualizada com sucesso!');
+        return redirect()->route('admin.categories.index')->with('success', 'Categoria atualizada com sucesso!');
     }
     public function storeCategory(Request $request)
     {
@@ -70,14 +81,14 @@ class AdminController extends Controller
         ]);
 
         // 3. Redirecionar
-        return redirect()->route('admin.listCategory')->with('success', 'Categoria criada com sucesso!');
+        return redirect()->route('admin.categories.index')->with('success', 'Categoria criada com sucesso!');
     }
     /** Exclui uma categoria e reatribui produtos órfãos.*/
     public function destroyCategory(Category $category)
     {
         // Não podemos deixar o admin excluir a categoria "Sem Categoria"
         if ($category->slug === 'sem-categoria') {
-            return redirect()->route('admin.listCategory')
+            return redirect()->route('admin.categories.index')
                 ->with('error', 'Não é possível excluir a categoria padrão "Sem Categoria".');
         }
 
@@ -108,11 +119,11 @@ class AdminController extends Controller
             });
         } catch (\Exception $e) {
             // Se algo der errado (ex: 'Sem Categoria' não encontrada)
-            return redirect()->route('admin.listCategory')
+            return redirect()->route('admin.categories.index')
                 ->with('error', 'Ocorreu um erro inesperado ao excluir a categoria: ' . $e->getMessage());
         }
 
-        return redirect()->route('admin.listCategory')->with('success', 'Categoria excluída com sucesso!');
+        return redirect()->route('admin.categories.index')->with('success', 'Categoria excluída com sucesso!');
     }
 
     // ? Gerenciamento de Usuários
@@ -176,12 +187,17 @@ class AdminController extends Controller
             'role' => ['required', Rule::in(['usuario', 'vendedor', 'admin'])]
         ]);
 
+        $oldRole = $user->role;
+        $newRole = $validatedData['role'];
+
         $user->update($validatedData);
 
-        // Lógica futura: Se o usuário foi promovido a 'vendedor' e não tem
-        // um 'sellerProfile', talvez criar um vazio? Ou redirecionar
-        // para uma página que o obrigue a preencher?
-        // Por enquanto, apenas mudamos a role.
+        // Se o usuário foi promovido a 'vendedor' e não era antes,
+        // e ainda não tem um perfil de vendedor, vamos redirecioná-lo
+        // para a criação do perfil.
+        if ($newRole === 'vendedor' && $oldRole !== 'vendedor' && !$user->sellerProfile) {
+            return redirect()->route('admin.users.index')->with('success', 'Usuário promovido a vendedor! O vendedor precisará preencher seu perfil para começar a usar a plataforma.');
+        }
 
         return redirect()->route('admin.users.index')->with('success', 'Nível do usuário atualizado com sucesso!');
     }
@@ -223,7 +239,7 @@ class AdminController extends Controller
 
         // 3. Redirecionar para a Home (ou para um painel de admin futuro)
         //    com uma mensagem de sucesso.
-        return redirect()->route('home')->with('success', 'Anúncio excluído pelo administrador.');
+        return redirect()->route('admin.products.index')->with('success', 'Anúncio excluído pelo administrador.');
     }
 
     /**
@@ -288,7 +304,10 @@ class AdminController extends Controller
 
     public function destroyPlan(Plan $plan)
     {
-        // Adicionar lógica de segurança aqui depois (ex: não excluir se houver assinantes)
+        if ($plan->subscriptions()->exists()) {
+            return redirect()->route('admin.plans.index')->with('error', 'Não é possível excluir um plano que possui assinantes.');
+        }
+
         try {
             $plan->delete();
         } catch (\Exception $e) {
