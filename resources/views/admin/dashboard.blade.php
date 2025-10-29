@@ -33,10 +33,19 @@
                                     <label for="name"
                                         class="block font-medium text-sm text-gray-700 dark:text-gray-300">Nome da
                                         Categoria</label>
-                                    <input type="text" id="name" name="name"
+                                    <input type="text" id="name" name="name" value="{{ old('name') }}"
                                         class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:bg-gray-900 dark:border-gray-700"
                                         required>
                                     <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="icon_svg"
+                                        class="block font-medium text-sm text-gray-700 dark:text-gray-300">Ícone SVG</label>
+                                    <textarea id="icon_svg" name="icon_svg" rows="4"
+                                        class="block mt-1 w-full rounded-md shadow-sm border-gray-300 dark:bg-gray-900 dark:border-gray-700 font-mono text-sm">{{ old('icon_svg') }}</textarea>
+                                    <p class="mt-1 text-xs text-gray-500">Cole o código SVG completo do ícone.</p>
+                                    <x-input-error :messages="$errors->get('icon_svg')" class="mt-2" />
                                 </div>
 
                                 <button type="submit"

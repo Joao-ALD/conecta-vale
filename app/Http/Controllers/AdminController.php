@@ -41,12 +41,14 @@ class AdminController extends Controller
                 'max:255',
                 Rule::unique('categories')->ignore($category->id),
             ],
+            'icon_svg' => 'nullable|string',
         ]);
 
         // 2. Atualização
         $category->update([
             'name' => $validatedData['name'],
             'slug' => Str::slug($validatedData['name']), // Atualiza o slug também
+            'icon_svg' => $validatedData['icon_svg'],
         ]);
 
         // 3. Redirecionar
@@ -57,12 +59,14 @@ class AdminController extends Controller
         // 1. Validação
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name', // Nome deve ser único
+            'icon_svg' => 'nullable|string',
         ]);
 
         // 2. Criação
         Category::create([
             'name' => $validatedData['name'],
             'slug' => Str::slug($validatedData['name']), // Cria o slug automaticamente
+            'icon_svg' => $validatedData['icon_svg'],
         ]);
 
         // 3. Redirecionar
