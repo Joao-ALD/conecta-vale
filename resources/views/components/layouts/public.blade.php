@@ -176,9 +176,9 @@
                 <div>
                     <h4 class="font-semibold text-lg mb-4">Institucional</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 hover:text-white">Sobre Nós</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Termos de Uso</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
+                        <li><a href="{{ route('pages.about') }}" class="text-gray-400 hover:text-white">Sobre Nós</a></li>
+                        <li><a href="{{ route('pages.terms') }}" class="text-gray-400 hover:text-white">Termos de Uso</a></li>
+                        <li><a href="{{ route('pages.privacy') }}" class="text-gray-400 hover:text-white">Política de Privacidade</a></li>
                     </ul>
                 </div>
 

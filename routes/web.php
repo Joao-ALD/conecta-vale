@@ -10,6 +10,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SellerProfileController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\InstitutionalPagesController;
 use Illuminate\Support\Facades\Route;
 
 // ?Página Principal (Home)
@@ -20,6 +21,11 @@ Route::get('/produto/{product}', [ProductController::class, 'show'])->name('prod
 Route::get('/categoria/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
 // Pesquisar produtos
 Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+// ? Páginas Institucionais
+Route::get('/sobre-nos', [InstitutionalPagesController::class, 'about'])->name('pages.about');
+Route::get('/termos-de-uso', [InstitutionalPagesController::class, 'terms'])->name('pages.terms');
+Route::get('/politica-de-privacidade', [InstitutionalPagesController::class, 'privacy'])->name('pages.privacy');
 
 // ? Rotas do Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
