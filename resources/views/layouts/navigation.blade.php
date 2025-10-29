@@ -30,6 +30,9 @@
                         </x-nav-link>
                     @endif
                     @if(Auth::user()->role === 'admin')
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                            {{ __('Painel do Administrador') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                             {{ __('Gerenciar Usuários') }}
                         </x-nav-link>

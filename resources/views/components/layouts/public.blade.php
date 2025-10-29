@@ -78,7 +78,7 @@
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-dropdown-link :href="route('dashboard')">Meu Painel</x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.dashboard')">Meu Painel</x-dropdown-link>
                                     <x-dropdown-link :href="route('favorites.index')">Meus Favoritos</x-dropdown-link>
                                     @if (Auth::user()->role === 'usuario')
                                         <form method="POST" action="{{ route('user.becomeSeller') }}">
