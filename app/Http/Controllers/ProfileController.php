@@ -57,4 +57,20 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Allow a user to become a seller.
+     */
+    public function becomeSeller(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if ($user->role === 'vendedor') {
+            return back()->with('info', 'Você já é um vendedor.');
+        }
+
+        $user->update(['role' => 'vendedor']);
+
+        return redirect()->route('seller.profile.create')->with('success', 'Agora complete seu perfil de vendedor!');
+    }
 }

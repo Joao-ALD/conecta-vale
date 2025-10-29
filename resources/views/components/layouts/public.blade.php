@@ -61,6 +61,16 @@
                                 </x-slot>
                                 <x-slot name="content">
                                     <x-dropdown-link :href="route('dashboard')">Meu Painel</x-dropdown-link>
+                                    @if (Auth::user()->role === 'usuario')
+                                        <form method="POST" action="{{ route('user.becomeSeller') }}">
+                                            @csrf
+                                            <x-dropdown-link :href="route('user.becomeSeller')"
+                                                    onclick="event.preventDefault();
+                                                                this.closest('form').submit();">
+                                                Anunciar meus Produtos
+                                            </x-dropdown-link>
+                                        </form>
+                                    @endif
                                     @if(Auth::user()->role === 'vendedor')
                                         <x-dropdown-link :href="route('products.my')">Meus Anúncios</x-dropdown-link>
                                         @if(Auth::user()->sellerProfile)
