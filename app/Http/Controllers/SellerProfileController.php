@@ -19,7 +19,7 @@ class SellerProfileController extends Controller
     {
         // Se o usuário JÁ tem perfil, redireciona para o dashboard normal
         if (Auth::user()->sellerProfile()->exists()) {
-            return redirect()->route('dashboard'); 
+            return redirect()->route('dashboard');
         }
         return view('seller.profile.create');
     }
@@ -43,15 +43,10 @@ class SellerProfileController extends Controller
                 'required',
                 'string',
                 // Garante que o documento seja único na tabela
-                Rule::unique('seller_profiles', 'document_number'), 
-                // Validação básica de formato (pode ser melhorada com regras customizadas)
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->document_type == 'cpf' && !preg_match('/^\d{11}$/', $value)) {
-                        $fail('O CPF deve conter 11 dígitos.');
-                    } elseif ($request->document_type == 'cnpj' && !preg_match('/^\d{14}$/', $value)) {
-                        $fail('O CNPJ deve conter 14 dígitos.');
-                    }
-                },
+                Rule::unique('seller_profiles', 'document_number'),
+                // Usa as regras da biblioteca pt-br-validator
+                Rule::when($request->document_type == 'cpf', ['cpf']),
+                Rule::when($request->document_type == 'cnpj', ['cnpj']),
             ],
             'phone' => 'nullable|string|max:20',
         ]);
@@ -69,10 +64,9 @@ class SellerProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        // Carrega o perfil do vendedor (assume que ele existe, pois o middleware CheckSellerProfile protege outras rotas)
-        // Se esta rota for acessada por um vendedor SEM perfil (raro), dará erro. Podemos adicionar um check depois.
-        $profile = $user->sellerProfile()->firstOrFail(); 
-        
+        // Carrega o perfil do vendedor
+        $profile = $user->sellerProfile()->firstOrFail();
+
         return view('seller.profile.edit', compact('profile'));
     }
 
@@ -91,14 +85,10 @@ class SellerProfileController extends Controller
                 'required',
                 'string',
                 // Garante que o documento seja único, IGNORANDO o registro atual
-                Rule::unique('seller_profiles', 'document_number')->ignore($profile->id), 
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($request->document_type == 'cpf' && !preg_match('/^\d{11}$/', $value)) {
-                        $fail('O CPF deve conter 11 dígitos.');
-                    } elseif ($request->document_type == 'cnpj' && !preg_match('/^\d{14}$/', $value)) {
-                        $fail('O CNPJ deve conter 14 dígitos.');
-                    }
-                },
+                Rule::unique('seller_profiles', 'document_number')->ignore($profile->id),
+                // Usa as regras da biblioteca pt-br-validator
+                Rule::when($request->document_type == 'cpf', ['cpf']),
+                Rule::when($request->document_type == 'cnpj', ['cnpj']),
             ],
             'phone' => 'nullable|string|max:20',
         ]);
@@ -112,7 +102,7 @@ class SellerProfileController extends Controller
 
     public function showPlans()
     {
-        $plans = Plan::all();
+        $plans = Plan::where('is_active', true)->orderBy('price')->get(); // Apenas planos ativos
         $currentSubscription = Auth::user()->currentSubscription();
 
         return view('seller.plans.show', compact('plans', 'currentSubscription'));
@@ -127,17 +117,28 @@ class SellerProfileController extends Controller
         $plan = Plan::findOrFail($request->plan_id);
         $user = Auth::user();
 
-        // Lógica de expiração
-        $expiresAt = $plan->price > 0 ? Carbon::now()->addMonth() : null;
+        // --- INÍCIO: Lógica de Pagamento (SIMULAÇÃO) ---
+        // TODO: Substituir esta simulação pela integração real com o gateway de pagamento
+        $paymentSuccessful = true; // Simula um pagamento bem-sucedido
+        // --- FIM: Lógica de Pagamento (SIMULAÇÃO) ---
 
-        Subscription::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'plan_id' => $plan->id,
-                'expires_at' => $expiresAt,
-            ]
-        );
+        if ($paymentSuccessful) {
+            // Lógica de expiração (planos pagos duram 1 mês, gratuitos são nulos/permanentes)
+            // Ajuste "+1 month" se necessário (ex: +30 days, ou baseado no plano)
+            $expiresAt = $plan->price > 0 ? Carbon::now()->addMonth() : null;
 
-        return redirect()->route('seller.plans.show')->with('success', 'Plano atualizado com sucesso!');
+            Subscription::updateOrCreate(
+                ['user_id' => $user->id], // Chave para encontrar ou criar
+                [ // Dados para atualizar ou criar
+                    'plan_id' => $plan->id,
+                    'expires_at' => $expiresAt,
+                ]
+            );
+
+            return redirect()->route('seller.plans.show')->with('success', 'Plano atualizado com sucesso!');
+        } else {
+            // Se o pagamento falhar
+            return redirect()->route('seller.plans.show')->with('error', 'Falha no processamento do pagamento. Tente novamente.');
+        }
     }
 }

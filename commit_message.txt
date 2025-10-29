@@ -1,0 +1,11 @@
+Reestilizar as páginas de login e registo
+
+- Atualiza o layout de convidado para se alinhar com o tema público principal.
+- Modifica os componentes do botão principal e da entrada de texto para usar a paleta de cores da aplicação (vale-primary, vale-accent).
+- Ajusta o estilo dos links e caixas de seleção nos formulários de login e registo para uma aparência consistente.
+
+Além disso, este commit inclui duas pequenas correções de bugs:
+- Limpa o cache de rotas para resolver um problema com a página de planos do administrador.
+- Corrige o destaque do estado ativo para o link de gestão de categorias na navegação do administrador.
+
+Traduzido com a versão gratuita do tradutor - DeepL.com
