@@ -114,6 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit'); // Editar
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Atualizar
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy'); // Excluir
+    Route::post('/tornar-vendedor', [ProfileController::class, 'becomeSeller'])->name('user.becomeSeller');
 });
 
 // Rota do Dashboard (Breeze)
