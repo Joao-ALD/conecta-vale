@@ -16,7 +16,7 @@ class ContactController extends Controller
     {
         $user = Auth::user();
         $conversations = $user->conversations()
-                            ->has('messages')
+                            ->whereColumn('updated_at', '>', 'created_at')
                             ->with('product', 'buyer', 'seller', 'latestMessage') // Eager load relationships
                             ->withCount(['messages as unread_messages_count' => function ($query) {
                                 $query->where('is_read', false)->where('user_id', '!=', Auth::id());
