@@ -66,6 +66,6 @@ Você pode usar essas credenciais para fazer login e testar a aplicação.
 
 ## Contribuição
 Contribuições são bem-vindas! Sinta-se à vontade para enviar um pull request.
-
+<!-- 
 ## Licença
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes. -->
