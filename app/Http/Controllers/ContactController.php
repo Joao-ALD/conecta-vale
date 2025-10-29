@@ -16,6 +16,7 @@ class ContactController extends Controller
     {
         $user = Auth::user();
         $conversations = $user->conversations()
+                            ->has('messages')
                             ->with('product', 'buyer', 'seller') // Otimização
                             ->latest('updated_at')
                             ->get();
