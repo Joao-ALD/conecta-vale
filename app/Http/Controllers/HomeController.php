@@ -14,11 +14,16 @@ class HomeController extends Controller
     public function index()
     {
         // Use 'with('seller')' para carregar o vendedor junto (Eager Loading)
-        $products = Product::with('seller')->latest()->paginate(16);
+        $products = Product::with('seller', 'images')->latest()->paginate(16);
         $categories = Category::all();
 
+        $favoriteProductIds = [];
+        if (auth()->check()) {
+            $favoriteProductIds = auth()->user()->favorites()->pluck('products.id')->toArray();
+        }
+
         // O Breeze usa a view 'welcome' por padrão para a home
-        return view('welcome', compact('products', 'categories'));
+        return view('welcome', compact('products', 'categories', 'favoriteProductIds'));
     }
 
     //** Mostra os resultados da busca.*/
@@ -46,7 +51,12 @@ class HomeController extends Controller
         // 4. Reutilizar a sidebar de categorias
         $categories = Category::all();
 
+        $favoriteProductIds = [];
+        if (auth()->check()) {
+            $favoriteProductIds = auth()->user()->favorites()->pluck('products.id')->toArray();
+        }
+
         // 5. Retornar a view
-        return view('search.results', compact('products', 'categories', 'query'));
+        return view('search.results', compact('products', 'categories', 'query', 'favoriteProductIds'));
     }
 }

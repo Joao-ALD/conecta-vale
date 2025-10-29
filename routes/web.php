@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\SellerProfileController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
@@ -108,6 +109,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Rota para ENVIAR uma mensagem em uma conversa existente
     Route::post('/conversations/{conversation}', [ContactController::class, 'sendMessage'])->name('contact.send');
+
+    // --- ROTAS DE FAVORITOS ---
+    Route::post('/favoritos/toggle/{product}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+    Route::get('/favoritos', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 // --- ROTAS DE PERFIL DE USUÁRIO (Breeze) ---
 Route::middleware('auth')->group(function () {

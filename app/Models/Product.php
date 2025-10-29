@@ -55,4 +55,9 @@ class Product extends Model
         // Se não houver imagem, retorna o placeholder
         return 'https://via.placeholder.com/300x200.png?text=Sem+Imagem';
     }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorite_product', 'product_id', 'user_id');
+    }
 }
