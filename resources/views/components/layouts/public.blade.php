@@ -93,12 +93,24 @@
         <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex space-x-6 overflow-x-auto py-3">
                  @foreach($categoriesGlobal as $category)
-                    <a href="{{ route('categories.show', $category) }}" class="flex flex-col items-center text-center text-sm font-medium text-gray-600 hover:text-vale-primary whitespace-nowrap group">
-                        {{-- Ícone Placeholder - Idealmente, você teria um ícone SVG para cada categoria --}}
-                        <span class="inline-block p-2 bg-gray-100 rounded-full mb-1 group-hover:bg-vale-primary/10">
-                            <svg class="h-6 w-6 text-gray-500 group-hover:text-vale-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.53 0 1.04.21 1.41.59L17 7h3a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3l2-2h5l2 2z"></path></svg>
+                    @php
+                        // Verifica se a rota atual é a de exibição de categoria e se a categoria atual do loop é a que está sendo exibida
+                        $isCurrentCategory = request()->routeIs('categories.show') && request()->route('category')->is($category);
+                        $link = $isCurrentCategory ? route('home') : route('categories.show', $category);
+                    @endphp
+                    <a href="{{ $link }}" class="flex flex-col items-center text-center text-sm font-medium text-gray-600 hover:text-vale-primary whitespace-nowrap group">
+                        {{-- O ícone SVG será inserido aqui dinamicamente --}}
+                        <span class="inline-block p-2 rounded-full mb-1 group-hover:bg-vale-primary/10 {{ $isCurrentCategory ? 'bg-vale-primary/20' : 'bg-gray-100' }}">
+                            @if($category->icon_svg)
+                                {!! $category->icon_svg !!}
+                            @else
+                                {{-- Ícone Placeholder --}}
+                                <svg class="h-6 w-6 text-gray-500 group-hover:text-vale-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.53 0 1.04.21 1.41.59L17 7h3a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2 2V5c0-1.1.9-2 2-2h3l2-2h5l2 2z"></path></svg>
+                            @endif
                         </span>
-                        {{ $category->name }}
+                        <span class="{{ $isCurrentCategory ? 'font-bold text-vale-primary' : '' }}">
+                            {{ $category->name }}
+                        </span>
                     </a>
                  @endforeach
             </div>
