@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="flex items-center justify-between mt-6">
-                            <a href="{{ route('admin.listCategory') }}"
+                            <a href="{{ route('admin.categories.index') }}"
                                 class="text-sm text-gray-600 dark:text-gray-400 hover:underline">
                                 Cancelar
                             </a>
