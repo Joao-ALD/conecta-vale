@@ -41,30 +41,29 @@
     </a>
 
     <div class="p-3 flex flex-col flex-grow">
-        {{-- Título (Nome) - AGORA PRIMEIRO --}}
-        <h3 class="text-sm text-gray-700 mb-1 flex-grow min-h-[40px] font-medium"> {{-- Altura mínima, margem inferior e
-            fonte média --}}
+        {{-- Título (Nome) --}}
+        {{-- Classe ajustada: text-base (maior), mb-0.5 (menos espaço abaixo) --}}
+        <h3 class="text-base text-gray-800 mb-0.5 flex-grow min-h-[40px] font-medium">
             <a href="{{ $query ? route('products.show', [$product, 'q' => $query]) : route('products.show', $product) }}"
-                class="hover:text-vale-primary line-clamp-2"> {{-- Limita a 2 linhas --}}
-                {{-- Usa a função highlight se houver query, senão só o nome --}}
+                class="hover:text-vale-primary line-clamp-2">
                 {!! $query ? highlight($product->name ?? 'Nome Indisponível', $query) : ($product->name ?? 'Nome Indisponível') !!}
             </a>
         </h3>
 
-        {{-- Preço - AGORA SEGUNDO --}}
-        <p class="font-bold text-lg text-gray-900 mb-2"> {{-- Margem inferior --}}
+        {{-- Preço --}}
+        {{-- Classe ajustada: text-lg (mantido), font-semibold (menos pesado), mb-2 (mantido) --}}
+        <p class="font-semibold text-lg text-gray-900 mb-2">
             R$ {{ number_format($product->price, 2, ',', '.') }}
         </p>
 
         {{-- Informações Adicionais (Data/Localização) --}}
         <div class="text-xs text-gray-500 mt-auto pt-2 border-t border-gray-100 flex justify-between items-center">
             <span>{{ $product->created_at->format('d/m/Y') }}</span>
-            {{-- Localização - Exemplo buscando do perfil do vendedor --}}
             <span>
                 @if($product->seller->sellerProfile?->city)
                     {{ $product->seller->sellerProfile->city }}
                 @else
-                    Vale do Ribeira {{-- Fallback --}}
+                    Vale do Ribeira
                 @endif
             </span>
         </div>
