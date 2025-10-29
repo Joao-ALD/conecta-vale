@@ -1,18 +1,21 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Escolha seu Plano de Assinatura') }}
-        </h2>
-    </x-slot>
-
+<x-layouts.public>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight mb-6">
+                        {{ __('Escolha seu Plano de Assinatura') }}
+                    </h2>
 
                     @if (session('success'))
                         <div class="mb-4 font-medium text-sm text-green-600 bg-green-100 border border-green-400 p-3 rounded-md">
                             {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="mb-4 font-medium text-sm text-red-600 bg-red-100 border border-red-400 p-3 rounded-md">
+                            {{ session('error') }}
                         </div>
                     @endif
 
@@ -42,7 +45,7 @@
                                         <form action="{{ route('seller.plans.subscribe') }}" method="POST" class="w-full">
                                             @csrf
                                             <input type="hidden" name="plan_id" value="{{ $plan->id }}">
-                                            <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                                            <button type="submit" class="w-full bg-vale-primary text-white py-2 px-4 rounded hover:bg-vale-accent">
                                                 {{ $currentSubscription ? 'Mudar para este Plano' : 'Assinar Plano' }}
                                             </button>
                                         </form>
@@ -57,4 +60,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.public>

@@ -41,7 +41,25 @@ class ProductPolicy
      */
     public function create(User $user)
     {
-        //
+        $subscription = $user->currentSubscription();
+
+        if (!$subscription) {
+            return \Illuminate\Auth\Access\Response::deny('Você não tem uma assinatura ativa.');
+        }
+
+        $plan = $subscription->plan;
+
+        if ($plan->max_products === -1) {
+            return true; // Anúncios ilimitados
+        }
+
+        $productCount = $user->products()->count();
+
+        if ($productCount >= $plan->max_products) {
+            return \Illuminate\Auth\Access\Response::deny('Atingiu o limite de anúncios do seu plano.');
+        }
+
+        return true;
     }
 
     /**

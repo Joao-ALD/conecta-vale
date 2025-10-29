@@ -51,7 +51,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 // Rotas que EXIGEM perfil completo
-Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete'])->group(function () {
+Route::middleware(['auth', 'role:vendedor', 'seller.profile.complete', 'subscription.active'])->group(function () {
     // Rota customizada para listar "Meus Produtos" (o index do vendedor)
     Route::get('/vendedor/meus-produtos', [ProductController::class, 'myProducts'])->name('products.my');
 
