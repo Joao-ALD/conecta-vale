@@ -113,6 +113,32 @@
             </div>
 
             <div class="mt-6">
+                <div class="flex items-center gap-x-4 mb-4">
+                    <form action="{{ route('favorites.toggle', $product) }}" method="POST" class="flex-grow">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center justify-center gap-x-2 border-2 border-gray-300 hover:border-red-400 hover:bg-red-50 text-gray-700 font-bold py-2.5 px-6 rounded-lg transition-colors duration-300">
+                            @auth
+                                @if(Auth::user()->favorites->contains($product))
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Remover dos Favoritos</span>
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                       <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.682l1.318-1.364a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                                    </svg>
+                                    <span>Adicionar aos Favoritos</span>
+                                @endif
+                            @else
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.682l1.318-1.364a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                                </svg>
+                                <span>Adicionar aos Favoritos</span>
+                            @endauth
+                        </button>
+                    </form>
+                </div>
+
                 <form action="{{ route('cart.store', $product) }}" method="POST">
                     @csrf
                     <button type="submit"
