@@ -122,6 +122,7 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     [
                         'product_id' => $product->id,
+                        'path' => $existingFile,
                     ],
                     [
                         'path' => $existingFile,
@@ -157,6 +158,7 @@ class ProductSeeder extends Seeder
                         ProductImage::updateOrCreate(
                             [
                                 'product_id' => $product->id,
+                                'path' => $imageName,
                             ],
                             [
                                 'path' => $imageName,
