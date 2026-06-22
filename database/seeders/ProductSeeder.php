@@ -19,7 +19,19 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $productsData = json_decode(file_get_contents(__DIR__ . '/data/products.json'), true);
+        $jsonPath = __DIR__ . '/data/products.json';
+
+        if (!file_exists($jsonPath)) {
+            Log::error("Arquivo de dados JSON não encontrado em: {$jsonPath}");
+            return;
+        }
+
+        $productsData = json_decode(file_get_contents($jsonPath), true);
+
+        if (!is_array($productsData)) {
+            Log::error("Formato de dados JSON inválido. O conteúdo de {$jsonPath} deve ser um array válido.");
+            return;
+        }
 
         // Ensure the products storage directory exists
         if (!Storage::disk('public')->exists('products')) {
@@ -67,14 +79,13 @@ class ProductSeeder extends Seeder
             // Generate deterministic file name based on URL
             $imageHash = md5($imageUrl);
 
-            // Since we don't know the exact extension yet without fetching,
-            // check if any file starts with this hash in the directory
-            $filesInStorage = Storage::disk('public')->files('products');
+            $possibleExtensions = ['jpg', 'png', 'webp', 'gif'];
             $existingFile = null;
 
-            foreach ($filesInStorage as $file) {
-                if (Str::startsWith(basename($file), $imageHash)) {
-                    $existingFile = $file;
+            foreach ($possibleExtensions as $ext) {
+                $possiblePath = "products/{$imageHash}.{$ext}";
+                if (Storage::disk('public')->exists($possiblePath)) {
+                    $existingFile = $possiblePath;
                     break;
                 }
             }
@@ -92,7 +103,7 @@ class ProductSeeder extends Seeder
 
                     if ($response->successful()) {
                         $imageContent = $response->body();
-                        $contentType = $response->header('Content-Type');
+                        $contentType = $response->header('Content-Type') ?? '';
 
                         // Derive extension from content type
                         $extension = 'jpg'; // Default fallback
