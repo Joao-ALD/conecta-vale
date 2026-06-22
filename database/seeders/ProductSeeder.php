@@ -19,7 +19,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $jsonPath = __DIR__ . '/data/products.json';
+        $jsonPath = database_path('seeders/data/products.json');
 
         if (!file_exists($jsonPath)) {
             Log::error("Arquivo de dados JSON não encontrado em: {$jsonPath}");
@@ -27,6 +27,11 @@ class ProductSeeder extends Seeder
         }
 
         $productsData = json_decode(file_get_contents($jsonPath), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::error("Erro ao decodificar JSON em {$jsonPath}: " . json_last_error_msg());
+            return;
+        }
 
         if (!is_array($productsData)) {
             Log::error("Formato de dados JSON inválido. O conteúdo de {$jsonPath} deve ser um array válido.");
@@ -41,8 +46,9 @@ class ProductSeeder extends Seeder
         // Search for sellers (users with 'vendedor' role or with a seller profile)
         $vendedores = User::whereHas('sellerProfile')->get();
         if ($vendedores->isEmpty()) {
-            // Fallback: use all users
-            $vendedores = User::all();
+            // Fallback: avoid memory leaks on large databases
+            Log::warning('ProductSeeder: no users with sellerProfile found; using limited fallback user list.');
+            $vendedores = User::inRandomOrder()->limit(100)->get();
         }
 
         if ($vendedores->isEmpty()) {
@@ -99,6 +105,8 @@ class ProductSeeder extends Seeder
                 ProductImage::updateOrCreate(
                     [
                         'product_id' => $product->id,
+                    ],
+                    [
                         'path' => $existingFile,
                     ]
                 );
@@ -132,6 +140,8 @@ class ProductSeeder extends Seeder
                         ProductImage::updateOrCreate(
                             [
                                 'product_id' => $product->id,
+                            ],
+                            [
                                 'path' => $imageName,
                             ]
                         );
