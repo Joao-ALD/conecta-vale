@@ -57,6 +57,12 @@ class ProductSeeder extends Seeder
         }
 
         foreach ($productsData as $data) {
+            // 0. JSON Validation Guard
+            if (!isset($data['name'], $data['description'], $data['price'], $data['category'], $data['image_url'])) {
+                Log::warning('ProductSeeder: Skipping item due to missing required keys.', ['item' => $data]);
+                continue;
+            }
+
             // 1. Identify or Create the Category
             $categoryName = $data['category'];
             $categorySlug = Str::slug($categoryName);
@@ -67,9 +73,11 @@ class ProductSeeder extends Seeder
             );
 
             // 2. Create or Update the Product assigned to a random seller (idempotent)
+            // Use firstOrCreate to ensure existing products keep their original owner.
+            // If the product exists by name, we fetch it. If not, we create it and assign a random seller.
             $vendedor = $vendedores->random();
 
-            $product = Product::updateOrCreate(
+            $product = Product::firstOrCreate(
                 [
                     'name' => $data['name'],
                 ],
@@ -79,6 +87,15 @@ class ProductSeeder extends Seeder
                     'price' => $data['price'],
                 ]
             );
+
+            // If it already existed, we still want to update its description and price to match the seeder data,
+            // but WITHOUT changing the `user_id`.
+            if (!$product->wasRecentlyCreated) {
+                $product->update([
+                    'description' => $data['description'],
+                    'price' => $data['price'],
+                ]);
+            }
 
             // 3. Attach Product to Category (syncWithoutDetaching prevents duplicates)
             $product->categories()->syncWithoutDetaching([$category->id]);

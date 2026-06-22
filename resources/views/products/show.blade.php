@@ -37,7 +37,7 @@
         }">
             <!-- Main Image Display -->
             <div class="relative bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-                <img @click="openModal(mainImage)" :src="mainImage" onerror="this.onerror=null;this.src='{{ asset('images/placeholder.svg') }}';" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg cursor-pointer bg-white">
+                <x-fallback-image @click="openModal(mainImage)" :src="mainImage" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg cursor-pointer bg-white" />
 
                 <!-- Carousel Buttons -->
                 <template x-if="images.length > 1">
@@ -56,7 +56,7 @@
             <div class="flex space-x-2 overflow-x-auto pb-2">
                 @forelse($product->images->sortBy('order') as $index => $image)
                     <button @click="currentIndex = {{ $index }}; openModal('{{ Storage::url($image->path) }}')" class="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden border-2 cursor-pointer" :class="{ 'border-vale-primary': currentIndex === {{ $index }} }">
-                        <img src="{{ Storage::url($image->path) }}" onerror="this.onerror=null;this.src='{{ asset('images/placeholder.svg') }}';" alt="Miniatura" class="w-full h-full object-cover bg-white">
+                        <x-fallback-image src="{{ Storage::url($image->path) }}" alt="Miniatura" class="w-full h-full object-cover bg-white" />
                     </button>
                 @empty
                     <!-- Show a placeholder if no images -->
@@ -80,7 +80,7 @@
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
                 x-cloak
             >
-                <img :src="modalImageUrl" onerror="this.onerror=null;this.src='{{ asset('images/placeholder.svg') }}';" alt="Visualização em tela cheia" class="max-w-full max-h-full object-contain p-4 bg-white">
+                <x-fallback-image :src="modalImageUrl" alt="Visualização em tela cheia" class="max-w-full max-h-full object-contain p-4 bg-white" />
                 
                 <button @click="closeModal()" class="absolute top-4 right-4 text-white text-4xl leading-none hover:text-gray-300">&times;</button>
             </div>
