@@ -60,18 +60,22 @@ class ProductSeeder extends Seeder
                 ['name' => $categoryName]
             );
 
-            // 2. Create the Product assigned to a random seller
+            // 2. Create or Update the Product assigned to a random seller (idempotent)
             $vendedor = $vendedores->random();
 
-            $product = Product::create([
-                'user_id' => $vendedor->id,
-                'name' => $data['name'],
-                'description' => $data['description'],
-                'price' => $data['price'],
-            ]);
+            $product = Product::updateOrCreate(
+                [
+                    'name' => $data['name'],
+                ],
+                [
+                    'user_id' => $vendedor->id,
+                    'description' => $data['description'],
+                    'price' => $data['price'],
+                ]
+            );
 
-            // 3. Attach Product to Category
-            $product->categories()->attach($category->id);
+            // 3. Attach Product to Category (syncWithoutDetaching prevents duplicates)
+            $product->categories()->syncWithoutDetaching([$category->id]);
 
             // 4. Image Caching and Download
             $imageUrl = $data['image_url'];
@@ -92,10 +96,12 @@ class ProductSeeder extends Seeder
 
             if ($existingFile) {
                 // File exists, skip download
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'path' => $existingFile,
-                ]);
+                ProductImage::updateOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'path' => $existingFile,
+                    ]
+                );
             } else {
                 // File does not exist, download it
                 try {
@@ -122,11 +128,13 @@ class ProductSeeder extends Seeder
                         // 5. Save locally in public storage
                         Storage::disk('public')->put($imageName, $imageContent);
 
-                        // 6. Create ProductImage record
-                        ProductImage::create([
-                            'product_id' => $product->id,
-                            'path' => $imageName,
-                        ]);
+                        // 6. Create ProductImage record (idempotent)
+                        ProductImage::updateOrCreate(
+                            [
+                                'product_id' => $product->id,
+                                'path' => $imageName,
+                            ]
+                        );
                     } else {
                         Log::error("Falha ao baixar imagem do produto {$data['name']}: HTTP status " . $response->status());
                     }
