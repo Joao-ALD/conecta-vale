@@ -74,14 +74,8 @@ class DatabaseSeeder extends Seeder
         }
 
         // --- 5. Criar Produtos ---
-        // Vamos criar 50 produtos, e para cada um,
-        // escolher um dos vendedores aleatoriamente.
-        Product::factory(50)
-            ->sequence(fn() => [
-                'user_id' => $vendedores->random()->id
-            ])
-            ->create();
-
-        // O 'configure' da ProductFactory cuidará de anexar as categorias.
+        // Aqui chamamos o novo seeder que usa o dicionário de dados estático
+        // para garantir consistência e baixar imagens reais
+        $this->call(ProductSeeder::class);
     }
 }
