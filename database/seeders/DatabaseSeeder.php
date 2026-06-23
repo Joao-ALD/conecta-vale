@@ -54,34 +54,24 @@ class DatabaseSeeder extends Seeder
             'name' => 'Sem Categoria',
             'slug' => 'sem-categoria',
         ]);
-        // Vamos criar algumas categorias específicas
-        $categorias = [
-            'Eletrônicos',
-            'Imóveis',
-            'Veículos',
-            'Para sua Casa',
-            'Moda e Beleza',
-            'Esportes e Lazer',
-            'Agro e Indústria',
-            'Vagas de Emprego'
-        ];
 
-        foreach ($categorias as $categoria) {
-            Category::factory()->create([
-                'name' => $categoria,
-                'slug' => Str::slug($categoria),
-            ]);
+        // Carregar categorias e ícones de um arquivo JSON externo
+        $categoriesJsonPath = database_path('seeders/data/categories.json');
+        if (file_exists($categoriesJsonPath)) {
+            $categorias = json_decode(file_get_contents($categoriesJsonPath), true) ?? [];
+
+            foreach ($categorias as $nome => $icon) {
+                Category::factory()->create([
+                    'name' => $nome,
+                    'slug' => Str::slug($nome),
+                    'icon_svg' => $icon,
+                ]);
+            }
         }
 
         // --- 5. Criar Produtos ---
-        // Vamos criar 50 produtos, e para cada um,
-        // escolher um dos vendedores aleatoriamente.
-        Product::factory(50)
-            ->sequence(fn() => [
-                'user_id' => $vendedores->random()->id
-            ])
-            ->create();
-
-        // O 'configure' da ProductFactory cuidará de anexar as categorias.
+        // Aqui chamamos o novo seeder que usa o dicionário de dados estático
+        // para garantir consistência e baixar imagens reais
+        $this->call(ProductSeeder::class);
     }
 }

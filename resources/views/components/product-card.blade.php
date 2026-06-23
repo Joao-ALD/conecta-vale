@@ -4,8 +4,8 @@
     class="group relative bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow duration-300 ease-in-out flex flex-col">
     <a href="{{ $query ? route('products.show', [$product, 'q' => $query]) : route('products.show', $product) }}"
         class="block relative aspect-[4/3] overflow-hidden"> {{-- Proporção 4:3 e overflow hidden --}}
-        <img src="{{ $product->first_image_url }}" alt="{{ $product->name }}"
-            class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
+        <x-fallback-image src="{{ $product->first_image_url }}" alt="{{ $product->name }}"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 bg-gray-100" />
         {{-- Efeito de zoom no hover --}}
 
         @auth
