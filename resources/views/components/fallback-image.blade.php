@@ -11,5 +11,5 @@
     src="{{ $src }}"
     alt="{{ $alt }}"
     onerror="this.onerror=null;this.src='{{ $placeholderSrc }}';"
-    {{ $attributes->merge(['class' => 'bg-white']) }}
+    {{ $attributes->merge() }}
 >

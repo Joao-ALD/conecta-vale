@@ -37,7 +37,7 @@
         }">
             <!-- Main Image Display -->
             <div class="relative bg-gray-200 dark:bg-gray-700 rounded-lg mb-4">
-                <x-fallback-image @click="openModal(mainImage)" :src="mainImage" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg cursor-pointer bg-white" />
+                <x-fallback-image @click="openModal(mainImage)" x-bind:src="mainImage" alt="{{ $product->name }}" class="h-96 w-full object-cover rounded-lg cursor-pointer bg-white" />
 
                 <!-- Carousel Buttons -->
                 <template x-if="images.length > 1">
@@ -80,7 +80,7 @@
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
                 x-cloak
             >
-                <x-fallback-image :src="modalImageUrl" alt="Visualização em tela cheia" class="max-w-full max-h-full object-contain p-4 bg-white" />
+                <x-fallback-image x-bind:src="modalImageUrl" alt="Visualização em tela cheia" class="max-w-full max-h-full object-contain p-4 bg-white" />
                 
                 <button @click="closeModal()" class="absolute top-4 right-4 text-white text-4xl leading-none hover:text-gray-300">&times;</button>
             </div>
